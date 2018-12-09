@@ -1,0 +1,7 @@
+ARGOStest
+ARGOStraining
+__pycache__
+.vscode
+trainingset.h5
+testset.h5
+ids_labels.pkl
