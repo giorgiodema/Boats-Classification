@@ -6,12 +6,12 @@ import re
 
 
 
-def load_dataset():
+def load_testset():
 
     img_shape = (800,240,3)
 
-    if not os.path.exists("trainingset.h5"):
-        print("Creating trainingset...")
+    if not os.path.exists("testset.h5"):
+        print("Creating testset...")
         with open("ARGOStest\ground_truth.txt","r") as f1:
             l = f1.read().split('\n')
         labels = []
@@ -37,12 +37,12 @@ def load_dataset():
             pickle.dump(ids_labels,f2)
 
 
-        tflearn.data_utils.build_hdf5_image_dataset("ARGOStest\ground.txt", img_shape, output_path='trainingset.h5',
+        tflearn.data_utils.build_hdf5_image_dataset("ARGOStest\ground.txt", img_shape, output_path='testset.h5',
                              mode='file', categorical_labels=True,
                              normalize=False, grayscale=False,
                              files_extension=['.jpg'], chunks=False)
-    print("Loading trainingset ...")
-    h5f = h5py.File('trainingset.h5', 'r')
+    print("Loading testgset ...")
+    h5f = h5py.File('testset.h5', 'r')
     X = h5f['X']
     Y = h5f['Y']
     with open("ids_labels.pkl","rb") as f3:
