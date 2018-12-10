@@ -25,7 +25,7 @@ Xtest,Ytest = dbloader.load_testset(img_shape,labels_ids)
 
 
 try:
-    model.fit(Xtrain, Ytrain, batch_size=64, epochs=100, verbose=1, validation_data = (Xtest,Ytest), shuffle=True)
+    model.fit(Xtrain, Ytrain, batch_size=64, epochs=100, verbose=1, validation_data = (Xtest,Ytest), shuffle="batch")
 except KeyboardInterrupt:
     pass
     
