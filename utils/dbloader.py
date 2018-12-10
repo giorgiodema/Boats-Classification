@@ -3,16 +3,17 @@ import os
 import h5py
 import pickle
 import re
+import PIL
+import numpy as np
 
-def load_trainingset():
+def load_trainingset(img_shape):
     
-    img_shape = (800,240,3)
     labels_ids = {}
     ids_labels = {}
 
     print("Creating trainingset...")
     if not os.path.exists("trainingset.h5"):
-        tflearn.data_utils.build_hdf5_image_dataset("ARGOStraining", img_shape, output_path='trainingset.h5',
+        tflearn.data_utils.build_hdf5_image_dataset("ARGOStraining", (img_shape[1],img_shape[0]), output_path='trainingset.h5',
                                 mode='folder', categorical_labels=True,
                                 normalize=True, grayscale=False,
                                 files_extension=None, chunks=False)
@@ -40,10 +41,44 @@ def load_trainingset():
 
     return [X,Y,img_shape,ids_labels,labels_ids]
 
-def load_testset(labels_ids):
+def load_testset(img_shape,labels_ids):
 
-    img_shape = (800,240,3)
+    if not os.path.exists("testset.h5"):
+        with open("ARGOStest\ground_truth.txt","r") as f:
+            aux = f.read().split('\n')
+            aux = list(filter(lambda x: re.match(r'.*;.*',x),aux))
+            aux = list(map(lambda x: (x.split(';')[0],x.split(';')[1].replace(' ','').replace(':','')),aux))
+            ground = {k:v for (k,v) in aux}
 
+        dataset = h5py.File("testset.h5", 'w')
+        d_imgshape = (len(ground),img_shape[0],img_shape[1],img_shape[2])
+        d_labelshape = (len(ground),len(labels_ids))
+        dataset.create_dataset('X', d_imgshape)
+        dataset.create_dataset('Y', d_labelshape)
+
+        paths = list(ground.keys())
+        for i in range(len(paths)):
+            img = PIL.Image.open("ARGOStest\\"+paths[i])
+            width, height = img.size
+            if width != img_shape[0] or height != img_shape[1]:
+                img = img.resize((img_shape[0], img_shape[1]), resize_mode=PIL.Image.ANTIALIAS)
+                if img.mode == 'L':
+                    img.convert_color('RGB')
+                    img.load()
+                    dataset['X'][i] = np.asarray(img, dtype="float32")
+                    y = np.zeros(shape = d_labelshape[1])
+                    y[labels_ids[  ground[paths[i]]  ]] = 1
+                    dataset['Y'][i] = y
+    print("Loading testset ...")
+    h5f = h5py.File('testset.h5', 'r')
+    X = h5f['X']
+    Y = h5f['Y']
+
+    return [X,Y]
+
+
+
+"""
     if not os.path.exists("testset.h5"):
         print("Creating testset...")
         with open("ARGOStest\ground_truth.txt","r") as f:
@@ -68,3 +103,4 @@ def load_testset(labels_ids):
     Y = h5f['Y']
 
     return [X,Y]
+"""

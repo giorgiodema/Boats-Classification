@@ -1,5 +1,6 @@
 ARGOStest/*
 ARGOStraining/*
+FalsePositives/*
 __pycache__
 .vscode
 trainingset.h5
