@@ -44,6 +44,7 @@ def load_trainingset(img_shape):
 def load_testset(img_shape,labels_ids):
 
     if not os.path.exists("testset.h5"):
+        print("Creating testset...")
         with open("ARGOStest\ground_truth.txt","r") as f:
             aux = f.read().split('\n')
             aux = list(filter(lambda x: re.match(r'.*;.*',x),aux))
