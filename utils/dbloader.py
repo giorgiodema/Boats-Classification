@@ -12,8 +12,8 @@ def load_trainingset(img_shape):
     labels_ids = {}
     ids_labels = {}
 
-    print("Creating trainingset...")
     if not os.path.exists("trainingset.h5"):
+        print("Creating trainingset...")
         tflearn.data_utils.build_hdf5_image_dataset("ARGOStraining", (img_shape[1],img_shape[0]), output_path='trainingset.h5',
                                 mode='folder', categorical_labels=True,
                                 normalize=True, grayscale=False,

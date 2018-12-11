@@ -6,7 +6,7 @@ def load_model(filename):
         print("Model not found")
         return None
     else:
-        model = keras.models.load_model(MODELNAME)
+        model = keras.models.load_model(filename)
         print("Model loaded successfully")
         return model
     
