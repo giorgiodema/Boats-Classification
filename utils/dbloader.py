@@ -37,9 +37,8 @@ def load_trainingset(img_shape):
     with open(join("raw","labels_ids.pkl"),"rb") as f:
         labels_ids = pickle.load(f)
     h5f = h5py.File('trainingset.h5', 'r')
-    X = h5f['X'][()]
-    Y = h5f['Y'][()]
-
+    X = h5f['X']
+    Y = h5f['Y']
     return [X,Y,img_shape,ids_labels,labels_ids]
 
 def load_testset(img_shape,labels_ids):
@@ -62,19 +61,22 @@ def load_testset(img_shape,labels_ids):
         for i in range(len(paths)):
             img = PIL.Image.open(join("ARGOStest","")+paths[i])
             width, height = img.size
-            if width != img_shape[0] or height != img_shape[1]:
-                img = img.resize((img_shape[0], img_shape[1]), resize_mode=PIL.Image.ANTIALIAS)
-                if img.mode == 'L':
-                    img.convert_color('RGB')
-                    img.load()
-                    dataset['X'][i] = np.asarray(img, dtype="float32")
-                    y = np.zeros(shape = d_labelshape[1])
-                    y[labels_ids[  ground[paths[i]]  ]] = 1
-                    dataset['Y'][i] = y
+            if width != img_shape[1] or height != img_shape[0]:
+                img = img.resize((img_shape[1], img_shape[0]))
+            if img.mode == 'L':
+                img.convert_color('RGB')
+            if not ground[paths[i]] in labels_ids:
+                continue
+            img.load()
+            dataset['X'][i] = np.asarray(img, dtype="float32")
+            y = np.zeros(shape = d_labelshape[1])
+            y[labels_ids[  ground[paths[i]]  ]] = 1
+            dataset['Y'][i] = y
+            #bp()
     print("Loading testset ...")
     h5f = h5py.File('testset.h5', 'r')
-    X = h5f['X'][()]
-    Y = h5f['Y'][()]
+    X = h5f['X']
+    Y = h5f['Y']
 
     return [X,Y]
 
