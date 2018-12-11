@@ -14,7 +14,8 @@ num_classes = 23
 model = load_save.load_model()
 if not model:
     x = keras.layers.Input(shape = img_shape)
-    model = keras.applications.inception_v3.InceptionV3(include_top=True, weights=None, input_tensor=x, input_shape=img_shape, pooling=None, classes=num_classes)
+    model = keras.applications.mobilenet_v2.MobileNetV2(input_shape=img_shape, alpha=1.0, depth_multiplier=1, include_top=True, weights=None, input_tensor=x, pooling=None, classes=num_classes)
+    #model = keras.applications.inception_v3.InceptionV3(include_top=True, weights=None, input_tensor=x, input_shape=img_shape, pooling=None, classes=num_classes)
     model.compile(optimizer='rmsprop',loss='categorical_crossentropy')
 
 model.summary()
@@ -27,8 +28,10 @@ Xtest,Ytest = dbloader.load_testset(img_shape,labels_ids)
 try:
     model.fit(Xtrain, Ytrain, batch_size=64, epochs=10, verbose=1, validation_data = (Xtest,Ytest), shuffle="batch")
 except KeyboardInterrupt:
-    pass
+    # Save the model
+    print("Saving...")
+    load_save.save_model(model)
+    quit()
     
-# Save the model
-load_save.save_model(model)
+
 
