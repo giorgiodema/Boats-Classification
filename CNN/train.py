@@ -1,6 +1,5 @@
 import keras
 import sys
-import load_save
 import os
 '''if sys.platform == "linux":
     sys.path.append(os.path.abspath("utils"))
@@ -9,6 +8,7 @@ else:
     sys.path.append(path)'''
 sys.path.append(os.path.abspath("utils"))
 import dbloader
+import load_save
 
 img_shape = (800,240,3)
 num_classes = 23
