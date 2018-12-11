@@ -12,10 +12,11 @@ import load_save
 
 img_shape = (800,240,3)
 num_classes = 23
+model_filename = "inceptionV3.h5"
 
 
 
-model = load_save.load_model()
+model = load_save.load_model(model_filename)
 if not model:
     x = keras.layers.Input(shape = img_shape)
     model = keras.applications.mobilenet_v2.MobileNetV2(input_shape=img_shape, alpha=1.0, depth_multiplier=1, include_top=True, weights=None, input_tensor=x, pooling=None, classes=num_classes)
@@ -34,7 +35,7 @@ try:
 except KeyboardInterrupt:
     # Save the model
     print("Saving...")
-    load_save.save_model(model)
+    load_save.save_model(model, model_filename)
     quit()
     
 
