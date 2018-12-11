@@ -5,6 +5,7 @@ import pickle
 import re
 import PIL
 import numpy as np
+from os.path import join
 
 def load_trainingset(img_shape):
     
@@ -17,23 +18,23 @@ def load_trainingset(img_shape):
                                 mode='folder', categorical_labels=True,
                                 normalize=True, grayscale=False,
                                 files_extension=None, chunks=False)
-    if not os.path.exists("raw\ids_labels.pkl"):
-        categories = os.listdir("ARGOStraining\\")
+    if not os.path.exists(join("raw","ids_labels.pkl")):
+        categories = os.listdir(join("ARGOStraining", ""))
         categories.remove("DBinfo.txt")
         categories.sort()
         ids = [x for x in range(len(categories))]
         labels_ids = {k:v for (k,v) in zip(categories,ids)}
         ids_labels = {k:v for (k,v) in zip(ids,categories)}
 
-        with open("raw\ids_labels.pkl","wb") as f:
+        with open(join("raw","ids_labels.pkl"),"wb") as f:
             pickle.dump(ids_labels,f)
-        with open("raw\labels_ids.pkl","wb") as f:
+        with open(join("raw","labels_ids.pkl"),"wb") as f:
             pickle.dump(labels_ids,f)
     
     print("Loading trainingset ...")
-    with open("raw\ids_labels.pkl","rb") as f:
+    with open(join("raw","ids_labels.pkl"),"rb") as f:
         ids_labels = pickle.load(f)
-    with open("raw\labels_ids.pkl","rb") as f:
+    with open(join("raw","labels_ids.pkl"),"rb") as f:
         labels_ids = pickle.load(f)
     h5f = h5py.File('trainingset.h5', 'r')
     X = h5f['X'][()]
@@ -45,7 +46,7 @@ def load_testset(img_shape,labels_ids):
 
     if not os.path.exists("testset.h5"):
         print("Creating testset...")
-        with open("ARGOStest\ground_truth.txt","r") as f:
+        with open(join("ARGOStest","ground_truth.txt"),"r") as f:
             aux = f.read().split('\n')
             aux = list(filter(lambda x: re.match(r'.*;.*',x),aux))
             aux = list(map(lambda x: (x.split(';')[0],x.split(';')[1].replace(' ','').replace(':','')),aux))
@@ -59,7 +60,7 @@ def load_testset(img_shape,labels_ids):
 
         paths = list(ground.keys())
         for i in range(len(paths)):
-            img = PIL.Image.open("ARGOStest\\"+paths[i])
+            img = PIL.Image.open(join("ARGOStest","")+paths[i])
             width, height = img.size
             if width != img_shape[0] or height != img_shape[1]:
                 img = img.resize((img_shape[0], img_shape[1]), resize_mode=PIL.Image.ANTIALIAS)

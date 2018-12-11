@@ -2,8 +2,12 @@ import keras
 import sys
 import load_save
 import os
-path = os.getcwd()+"\\utils"
-sys.path.append(path)
+'''if sys.platform == "linux":
+    sys.path.append(os.path.abspath("utils"))
+else:    
+    path = os.getcwd()+"\\utils"
+    sys.path.append(path)'''
+sys.path.append(os.path.abspath("utils"))
 import dbloader
 
 img_shape = (800,240,3)
