@@ -36,8 +36,8 @@ def load_trainingset(img_shape):
     with open("raw\labels_ids.pkl","rb") as f:
         labels_ids = pickle.load(f)
     h5f = h5py.File('trainingset.h5', 'r')
-    X = h5f['X']
-    Y = h5f['Y']
+    X = h5f['X'][()]
+    Y = h5f['Y'][()]
 
     return [X,Y,img_shape,ids_labels,labels_ids]
 
@@ -72,8 +72,8 @@ def load_testset(img_shape,labels_ids):
                     dataset['Y'][i] = y
     print("Loading testset ...")
     h5f = h5py.File('testset.h5', 'r')
-    X = h5f['X']
-    Y = h5f['Y']
+    X = h5f['X'][()]
+    Y = h5f['Y'][()]
 
     return [X,Y]
 
