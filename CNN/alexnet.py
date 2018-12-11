@@ -11,23 +11,6 @@ from keras.layers.normalization import BatchNormalization
 
 import tflearn.datasets.oxflower17 as oxflower17
 
-models_dir = 'models'
-
-def load_data():
-    Xtrain, Ytrain = oxflower17.load_data(one_hot=True)
-    
-    input_shape = (Xtrain.shape[1], Xtrain.shape[2], Xtrain.shape[3])     # (224,224,3)
-    num_classes = Ytrain.shape[1]  # 17
-    print("Training input %s" %str(Xtrain.shape))
-    print("Training output %s" %str(Ytrain.shape))
-    #print("Test input %s" %str(Xtest.shape))
-    #print("Test output %s" %str(Ytest.shape))
-    print("Input shape: %s" %str(input_shape))
-    print("Number of classes: %d" %num_classes)
-
-    return [Xtrain,Ytrain,input_shape,num_classes] 
-
-
 
 def AlexNet(input_shape, num_classes):
     # Some details in https://www.learnopencv.com/understanding-alexnet/
@@ -106,59 +89,6 @@ def AlexNet(input_shape, num_classes):
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
     return model
- 
-
-def savemodel(model,problem):
-    if problem.endswith('.h5'):
-        filename = problem
-    else:
-        filename = os.path.join(models_dir, '%s.h5' %problem)
-    model.save(filename)
-    #W = model.get_weights()
-    #print(W)
-    #np.savez(filename, weights = W)
-    print("\nModel saved successfully on file %s\n" %filename)
-
-    
-def loadmodel(problem):
-    if problem.endswith('.h5'):
-        filename = problem
-    else:
-        filename = os.path.join(models_dir, '%s.h5' %problem)
-    try:
-        model = models.load_model(filename)
-        print("\nModel loaded successfully from file %s\n" %filename)
-    except OSError:    
-        print("\nModel file %s not found!!!\n" %filename)
-        model = None
-    return model
   
 
-### main ###
-if __name__ == "__main__":
-
-    problem = 'alexnet_oxflower17'
-
-    #np.random.seed(20181205)
-
-    # Get Data
-    [Xtrain,Ytrain,input_shape,num_classes] = load_data()
-    
-    # Load or create model
-    model = loadmodel(problem)
-    if model==None:
-        model = AlexNet(input_shape, num_classes)
-
-    # Summary
-    model.summary()
-
-    # Train
-    try:
-        model.fit(Xtrain, Ytrain, batch_size=64, epochs=100, verbose=1, \
-        validation_split=0.2, shuffle=True)
-    except KeyboardInterrupt:
-        pass
-      
-    # Save the model
-    savemodel(model,problem)
 
