@@ -14,6 +14,7 @@ def load_trainingset(img_shape):
 
     if not os.path.exists("trainingset.h5"):
         print("Creating trainingset...")
+        # bug in build_dhf5_image comment (shape argument requires (width,height))
         tflearn.data_utils.build_hdf5_image_dataset("ARGOStraining", (img_shape[1],img_shape[0]), output_path='trainingset.h5',
                                 mode='folder', categorical_labels=True,
                                 normalize=True, grayscale=False,
@@ -49,6 +50,7 @@ def load_testset(img_shape,labels_ids):
             aux = f.read().split('\n')
             aux = list(filter(lambda x: re.match(r'.*;.*',x),aux))
             aux = list(map(lambda x: (x.split(';')[0],x.split(';')[1].replace(' ','').replace(':','')),aux))
+            aux = list(filter(lambda x:x[1] in labels_ids.keys(),aux))
             ground = {k:v for (k,v) in aux}
 
         dataset = h5py.File("testset.h5", 'w')
@@ -61,8 +63,8 @@ def load_testset(img_shape,labels_ids):
         for i in range(len(paths)):
             img = PIL.Image.open(join("ARGOStest","")+paths[i])
             width, height = img.size
-            if width != img_shape[0] or height != img_shape[1]:
-                img = img.resize((img_shape[0], img_shape[1]))
+            if width != img_shape[1] or height != img_shape[0]:
+                img = img.resize((img_shape[1], img_shape[0]))
             if img.mode == 'L':
                 img.convert_color('RGB')
             img.load()

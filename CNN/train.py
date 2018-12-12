@@ -12,7 +12,7 @@ import load_save
 import alexnet
 import lenet
 
-img_shape = (800,240,3)
+img_shape = (240,800,3)
 num_classes = 23
 model_filename = "inceptionV3.h5"
 
