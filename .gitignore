@@ -8,3 +8,6 @@ testset.h5
 inceptionV3.h5
 logger.csv
 raw/*
+*.rar
+*.pickle
+*.h5
