@@ -1,6 +1,9 @@
+import os
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
 import keras
 import sys
-import os
 '''if sys.platform == "linux":
     sys.path.append(os.path.abspath("utils"))
 else:    
