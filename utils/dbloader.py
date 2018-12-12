@@ -61,12 +61,10 @@ def load_testset(img_shape,labels_ids):
         for i in range(len(paths)):
             img = PIL.Image.open(join("ARGOStest","")+paths[i])
             width, height = img.size
-            if width != img_shape[1] or height != img_shape[0]:
-                img = img.resize((img_shape[1], img_shape[0]))
+            if width != img_shape[0] or height != img_shape[1]:
+                img = img.resize((img_shape[0], img_shape[1]))
             if img.mode == 'L':
                 img.convert_color('RGB')
-            if not ground[paths[i]] in labels_ids:
-                continue
             img.load()
             dataset['X'][i] = np.asarray(img, dtype="float32")
             y = np.zeros(shape = d_labelshape[1])

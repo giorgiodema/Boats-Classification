@@ -36,12 +36,16 @@ Xtest,Ytest = dbloader.load_testset(img_shape,labels_ids)
 
 try:
     #model.fit(Xtrain, Ytrain, batch_size=64, epochs=10, verbose=1, validation_data = (Xtest,Ytest), shuffle=True)
-    model.fit(Xtrain, Ytrain, batch_size=64, epochs=10, verbose=1, shuffle=True, callbacks=[keras.callbacks.CSVLogger("logger.csv", separator=',', append=False)])
+    model.fit(Xtrain, Ytrain, batch_size=16, epochs=10, verbose=1, shuffle="batch", callbacks=[keras.callbacks.CSVLogger("logger.csv", separator=',', append=False)])
 except KeyboardInterrupt:
     # Save the model
     print("Saving...")
     load_save.save_model(model, model_filename)
     quit()
+print("Training Completed...")
+print("Saving...")
+load_save.save_model(model, model_filename)
+print("Done...")
     
 
 
