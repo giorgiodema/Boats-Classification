@@ -31,7 +31,7 @@ model = Model(inputs=base_model.input, outputs=predictions)
 
 Xtrain,Ytrain,img_shape,ids_labels,labels_ids = dbloader.load_trainingset(img_shape)
 
-Xfeat = model.predict(Xtrain)
+Xfeat = base_model.predict(Xtrain)
 
 pickle.dump(open('features_pretrained.pickle', 'wb'), Xfeat)
 
