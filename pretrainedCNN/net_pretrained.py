@@ -10,7 +10,7 @@ import dbloader
 import load_save
 
 
-img_shape = (800,240,3)
+img_shape = (240,800,3)
 num_classes = 24
 model_filename = "inceptionV3_pretrained.h5"
 
