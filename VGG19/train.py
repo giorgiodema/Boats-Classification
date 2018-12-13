@@ -1,6 +1,9 @@
+import os
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
 import keras
 import sys
-import os
 '''if sys.platform == "linux":
     sys.path.append(os.path.abspath("utils"))
 else:    
@@ -36,16 +39,17 @@ Xtest,Ytest = dbloader.load_testset(img_shape,labels_ids)
 
 try:
     #model.fit(Xtrain, Ytrain, batch_size=64, epochs=10, verbose=1, validation_data = (Xtest,Ytest), shuffle=True)
-    model.fit(Xtrain, Ytrain, batch_size=16, epochs=10, verbose=1, shuffle="batch", callbacks=[keras.callbacks.CSVLogger("logger.csv", separator=',', append=False)])
+    model.fit(  Xtrain, Ytrain, batch_size=16, epochs=20, verbose=1, shuffle="batch", callbacks=[keras.callbacks.CSVLogger("logger.csv", separator=',', append=False),\
+    keras.callbacks.ModelCheckpoint(model_filename, monitor='val_loss', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)])
 except KeyboardInterrupt:
     # Save the model
-    print("Saving...")
-    load_save.save_model(model, model_filename)
+    #print("Saving...")
+    #load_save.save_model(model, model_filename)
     quit()
 print("Training Completed...")
-print("Saving...")
-load_save.save_model(model, model_filename)
-print("Done...")
+#print("Saving...")
+#load_save.save_model(model, model_filename)
+#print("Done...")
     
 
 
