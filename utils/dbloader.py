@@ -68,7 +68,7 @@ def load_testset(img_shape,labels_ids):
             if img.mode == 'L':
                 img.convert_color('RGB')
             img.load()
-            dataset['X'][i] = np.asarray(img, dtype="float32")
+            dataset['X'][i] = np.asarray(img, dtype="float32") / 255
             y = np.zeros(shape = d_labelshape[1])
             y[labels_ids[  ground[paths[i]]  ]] = 1
             dataset['Y'][i] = y
