@@ -29,7 +29,7 @@ if not model:
     feat_input = Input(shape=(6,23,2048,))  #shape of last inceptionV3 layer
     x = feat_input
 
-    x = GlobalAveragePooling2D()(x)
+    #x = GlobalAveragePooling2D()(x)
     # let's add a fully-connected layer
     x = Dense(1024, activation='relu')(x)
     # and a logistic layer -- let's say we have 200 classes
