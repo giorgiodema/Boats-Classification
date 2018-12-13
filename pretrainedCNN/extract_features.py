@@ -40,10 +40,6 @@ Xtest,Ytest = dbloader.load_testset(img_shape,labels_ids)
 # Ectract features for test set
 Xtest_feat = base_model.predict(Xtest, verbose=1)
 
-model = load_save.load_model("inceptionV3_pretrained.h5")
-print(model.evaluate(Xtest_feat, Ytest, verbose=1))
-
-
-#pickle.dump(Xtest_feat, open('features_pretrained_test_X.pickle', 'wb'))
-#pickle.dump(Ytest[()], open('features_pretrained_test_Y.pickle', 'wb'))
+pickle.dump(Xtest_feat, open('features_pretrained_test_X.pickle', 'wb'))
+pickle.dump(Ytest[()], open('features_pretrained_test_Y.pickle', 'wb'))
 
