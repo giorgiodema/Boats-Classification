@@ -18,7 +18,7 @@ num_classes = 24
 # create the base pre-trained model
 base_model = InceptionV3(weights='imagenet', include_top=False, input_shape=img_shape)
 
-x = GlobalAveragePooling2D()(base_model.layers[-1])
+x = GlobalAveragePooling2D()(base_model.layers[-1].output)
 base_model = Model(base_model.input, x)
 
 Xtrain,Ytrain,img_shape,ids_labels,labels_ids = dbloader.load_trainingset(img_shape)

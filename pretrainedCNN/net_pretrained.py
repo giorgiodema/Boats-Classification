@@ -26,7 +26,7 @@ model = load_save.load_model(model_filename)
 if not model:
     print("Creating model...")
 
-    feat_input = Input(shape=(6,23,2048,))  #shape of last inceptionV3 layer
+    feat_input = Input(shape=(2048,))  #shape of last inceptionV3 layer
     x = feat_input
 
     #x = GlobalAveragePooling2D()(x)
