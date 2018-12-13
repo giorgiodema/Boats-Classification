@@ -73,7 +73,7 @@ Xtrain, Ytrain = load_train_features()
 Xtest, Ytest = load_test_features()
 
 
-#model.fit(Xtrain, Ytrain, batch_size=16, epochs=14, verbose=1, validation_split=0.2, shuffle=False)
+model.fit(Xtrain, Ytrain, batch_size=32, epochs=14, verbose=1, validation_data=(Xtest, Ytest), shuffle=False)
 
 res = model.evaluate(Xtest, Ytest, verbose=1)
 print(res)
