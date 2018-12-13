@@ -3,6 +3,7 @@ import os
 import pickle
 import numpy as np
 import random
+from pdb import set_trace
 from keras.applications.inception_v3 import InceptionV3
 from keras.preprocessing import image
 from keras.models import Model
@@ -61,7 +62,7 @@ def load_train_features():
 
 # Loads test set
 def load_test_features():
-    Xtest = pickle.load(open("features_pretrained_test.pickle", "rb"))
+    Xtest = pickle.load(open("features_pretrained_test_X.pickle", "rb"))
     Ytest = pickle.load(open("features_pretrained_test_Y.pickle", "rb"))
     return shuffle_input(Xtest, Ytest)
 
@@ -72,7 +73,7 @@ Xtrain, Ytrain = load_train_features()
 Xtest, Ytest = load_test_features()
 
 
-model.fit(Xtrain, Ytrain, batch_size=16, epochs=10, verbose=1, validation_data=(Xtest,Ytest), shuffle=False)
+model.fit(Xtrain, Ytrain, batch_size=16, epochs=14, verbose=1, validation_split=0.2, shuffle=False)
 
 
 print("Saving...")
