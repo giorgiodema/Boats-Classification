@@ -1,7 +1,19 @@
 from keras.layers import Input, Dense, Conv2D, MaxPool2D, Flatten
 from keras.models import Model
+import os
+import pickle
 
-img_shape = (240,800,3)
+def save_classifier(path,clf):
+    with open(path,"wb") as f:
+        pickle.dump(clf,f)
+
+def load_classifier(path):
+    clf = None
+    if os.path.exists(path):
+        with open(path,"rb") as f:
+            clf = pickle.load(f)
+    return clf
+
 
 class ConvolutionalNN:
     def __init__(self,img_shape, num_cat):
@@ -21,3 +33,14 @@ class ConvolutionalNN:
         d1 = Dense(units=1000,activation='relu')(fl)
         d2 = Dense(units=500,activation='relu')(d1)
         output = Dense(units=num_cat,activation='softmax')(d2)
+
+        self.model = Model(inputs=x,outputs=output)
+        self.model.compile(optimizer='rmsprop',loss='categorical_crossentropy',metrics=['accuracy'])
+    
+    def fit(self,X,Y,Xval,Yval):
+        self.model.fit(X,Y, batch_size=64, validation_data=(Xval,Yval), epochs=100, verbose=1,validation_split=0.2, shuffle=True)
+
+    def predict(self,X):
+        return self.model.predict(X)
+
+    
