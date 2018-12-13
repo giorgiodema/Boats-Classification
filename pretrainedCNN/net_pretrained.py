@@ -71,7 +71,7 @@ def load_test_features():
 
 
 
-Xtrain, Ytrain = load_test_features()
+Xtrain, Ytrain = load_train_features()
 
 
                             #validation_data = (Xtest,Ytest)
