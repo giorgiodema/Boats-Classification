@@ -13,6 +13,27 @@ import dbloader
 import load_save
 
 
+# tmp
+
+img_shape = (240,800,3)
+num_classes = 24
+
+# create the base pre-trained model
+base_model = InceptionV3(weights='imagenet', include_top=False, input_shape=img_shape)
+
+
+
+Xtrain,Ytrain,img_shape,ids_labels,labels_ids = dbloader.load_trainingset(img_shape)
+
+
+Xtrain_feat = base_model.predict(Xtrain, verbose=1)
+Xtrain = Xtrain_feat
+del base_model
+
+# end tmp
+
+
+
 img_shape = (240,800,3)
 num_classes = 24
 model_filename = "inceptionV3_pretrained.h5"
@@ -60,6 +81,8 @@ model.summary()
 #raise Exception()
 
 # Training set
+
+'''
 Xtrain1 = pickle.load(open("features_pretrained_0_2000.pickle", "rb"))
 Xtrain2 = pickle.load(open("features_pretrained_2000_end.pickle", "rb"))
 Xtrain = np.concatenate((Xtrain1, Xtrain2))
@@ -70,7 +93,7 @@ Ytrain = pickle.load(open("features_pretrained_Y.pickle", "rb"))
 # Test set
 Xtest = pickle.load(open("features_pretrained_test.pickle", "rb"))
 Ytest = pickle.load(open("features_pretrained_test_Y.pickle", "rb"))
-
+'''
 
 #bp()
 

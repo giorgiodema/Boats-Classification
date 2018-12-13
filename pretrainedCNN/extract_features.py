@@ -25,6 +25,7 @@ Xtrain,Ytrain,img_shape,ids_labels,labels_ids = dbloader.load_trainingset(img_sh
 
 Xtrain_feat = base_model.predict(Xtrain, verbose=1)
 
+'''
 pickle.dump(Xtrain_feat[:2000], open('features_pretrained_0_2000.pickle', 'wb'))
 pickle.dump(Xtrain_feat[2000:], open('features_pretrained_2000_end.pickle', 'wb'))
 pickle.dump(Ytrain[()], open('features_pretrained_Y.pickle', 'wb'))
@@ -36,4 +37,4 @@ Xtest_feat = base_model.predict(Xtest, verbose=1)
 
 pickle.dump(Xtest_feat, open('features_pretrained_test.pickle', 'wb'))
 pickle.dump(Ytest[()], open('features_pretrained_test_Y.pickle', 'wb'))
-
+'''
