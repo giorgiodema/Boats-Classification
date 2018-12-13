@@ -2,7 +2,7 @@ import sys
 import os
 import pickle
 import numpy as np
-from random import shuffle
+import random
 from pdb import set_trace as bp
 from keras.applications.inception_v3 import InceptionV3
 from keras.preprocessing import image
@@ -12,6 +12,9 @@ from keras import backend as K
 sys.path.append(os.path.abspath("utils"))
 import dbloader
 import load_save
+
+
+random.seed(42)
 
 
 img_shape = (240,800,3)
@@ -42,43 +45,37 @@ if not model:
 model.summary()
 
 
-#Xtrain,Ytrain,img_shape,ids_labels,labels_ids = dbloader.load_trainingset(img_shape)
-#Xtest,Ytest = dbloader.load_testset(img_shape,labels_ids)
-#manz = model.evaluate(Xtest, Ytest)
-#print(manz)
-#raise Exception()
 
-# Training set
+def shuffle_input(X,Y):
+    aux = [(x,y) for x,y in zip(X, Y)]
+    random.shuffle(aux)
+    X_shffld = np.array([x[0] for x in aux])
+    Y_shffld = np.array([x[1] for x in aux])
+    return X_shffld, Y_shffld
 
 
-Xtrain1 = pickle.load(open("features_pretrained_0_2000.pickle", "rb"))
-Xtrain2 = pickle.load(open("features_pretrained_2000_end.pickle", "rb"))
-Xtrain = np.concatenate((Xtrain1, Xtrain2))
-del Xtrain1
-del Xtrain2
-Ytrain = pickle.load(open("features_pretrained_Y.pickle", "rb"))
+def load_train_features():
+    Xtrain1 = pickle.load(open("features_pretrained_0_2000.pickle", "rb"))
+    Xtrain2 = pickle.load(open("features_pretrained_2000_end.pickle", "rb"))
+    Xtrain = np.concatenate((Xtrain1, Xtrain2))
+    del Xtrain1
+    del Xtrain2
+    Ytrain = pickle.load(open("features_pretrained_Y.pickle", "rb"))
+    return shuffle_input(Xtrain, Ytrain)
 
-'''
-# Test set
-Xtest = pickle.load(open("features_pretrained_test.pickle", "rb"))
-Ytest = pickle.load(open("features_pretrained_test_Y.pickle", "rb"))
-'''
+def load_test_features():
+    Xtest = pickle.load(open("features_pretrained_test.pickle", "rb"))
+    Ytest = pickle.load(open("features_pretrained_test_Y.pickle", "rb"))
+    return shuffle_input(Xtest, Ytest)
 
-#bp()
 
-# shuffle
-aux = [(x,y) for x,y in zip(Xtrain, Ytrain)]
-shuffle(aux)
-Xtrain = np.array([x[0] for x in aux])
-Ytrain = np.array([x[1] for x in aux])
 
-try:                             #validation_data = (Xtest,Ytest)
-    model.fit(Xtrain, Ytrain, batch_size=16, epochs=10, verbose=1, validation_split=0.2, shuffle=False)
-except KeyboardInterrupt:
-    # Save the model
-    print("Saving...")
-    load_save.save_model(model, model_filename)
-    quit()
+
+Xtrain, Ytrain = load_test_features()
+
+
+                            #validation_data = (Xtest,Ytest)
+model.fit(Xtrain, Ytrain, batch_size=16, epochs=10, verbose=1, validation_split=0.2, shuffle=False)
 
 
 # Save the model
