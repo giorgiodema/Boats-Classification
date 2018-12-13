@@ -29,7 +29,6 @@ if not model:
     feat_input = Input(shape=(2048,))  #shape of last inceptionV3 layer
     x = feat_input
 
-    #x = GlobalAveragePooling2D()(x)
     # let's add a fully-connected layer
     x = Dense(1024, activation='relu')(x)
     # and a logistic layer -- let's say we have 200 classes
@@ -55,11 +54,7 @@ def shuffle_input(X,Y):
 
 
 def load_train_features():
-    Xtrain1 = pickle.load(open("features_pretrained_0_2000.pickle", "rb"))
-    Xtrain2 = pickle.load(open("features_pretrained_2000_end.pickle", "rb"))
-    Xtrain = np.concatenate((Xtrain1, Xtrain2))
-    del Xtrain1
-    del Xtrain2
+    Xtrain = pickle.load(open("features_pretrained_X.pickle", "rb"))
     Ytrain = pickle.load(open("features_pretrained_Y.pickle", "rb"))
     return shuffle_input(Xtrain, Ytrain)
 
