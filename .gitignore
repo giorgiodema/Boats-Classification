@@ -3,8 +3,9 @@ ARGOStraining/*
 FalsePositives/*
 __pycache__
 .vscode
-trainingset.h5
-testset.h5
-inceptionV3.h5
 logger.csv
 raw/*
+*.pkl
+*.jpg
+*.txt
+*.h5
