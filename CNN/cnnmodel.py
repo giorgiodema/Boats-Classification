@@ -38,7 +38,7 @@ class ConvolutionalNN:
         self.model.compile(optimizer='rmsprop',loss='categorical_crossentropy',metrics=['accuracy'])
     
     def fit(self,X,Y,Xval,Yval):
-        self.model.fit(X,Y, batch_size=64, validation_data=(Xval,Yval), epochs=100, verbose=1,validation_split=0.2, shuffle=True)
+        self.model.fit(X,Y, batch_size=64, validation_data=(Xval,Yval), epochs=20, verbose=1,validation_split=0.2, shuffle=True)
 
     def predict(self,X):
         return self.model.predict(X)
