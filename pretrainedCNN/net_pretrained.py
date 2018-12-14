@@ -18,7 +18,7 @@ random.seed(42)
 
 
 img_shape = (240,800,3)
-num_classes = 24
+num_classes = 23
 model_filename = "inceptionV3_pretrained.h5"
 
 

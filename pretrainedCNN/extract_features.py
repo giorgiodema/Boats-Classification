@@ -12,7 +12,7 @@ import load_save
 
 
 img_shape = (240,800,3)
-num_classes = 24
+num_classes = 23
 
 # Create the base pre-trained model without last layer
 base_model = InceptionV3(weights='imagenet', include_top=False, input_shape=img_shape)
@@ -30,8 +30,8 @@ Xtrain,Ytrain,img_shape,ids_labels,labels_ids = dbloader.load_trainingset(img_sh
 # Extract features for training set
 Xtrain_feat = base_model.predict(Xtrain, verbose=1)
 
-pickle.dump(Xtrain_feat, open('features_pretrained_X.pickle', 'wb'))
-pickle.dump(Ytrain[()], open('features_pretrained_Y.pickle', 'wb'))
+pickle.dump(Xtrain_feat, open(os.path.join('raw','features_pretrained_X.pickle', 'wb')))
+pickle.dump(Ytrain[()], open(os.path.join('raw','features_pretrained_Y.pickle', 'wb')))
 
 
 
@@ -40,6 +40,6 @@ Xtest,Ytest = dbloader.load_testset(img_shape,labels_ids)
 # Ectract features for test set
 Xtest_feat = base_model.predict(Xtest, verbose=1)
 
-pickle.dump(Xtest_feat, open('features_pretrained_test_X.pickle', 'wb'))
-pickle.dump(Ytest[()], open('features_pretrained_test_Y.pickle', 'wb'))
+pickle.dump(Xtest_feat, open(os.path.join('raw','features_pretrained_test_X.pickle'), 'wb'))
+pickle.dump(Ytest[()], open(os.path.join('raw','features_pretrained_test_Y.pickle'), 'wb'))
 

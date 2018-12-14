@@ -11,3 +11,4 @@ raw/*
 *.rar
 *.pickle
 *.h5
+dataset/
