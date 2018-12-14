@@ -1,18 +1,11 @@
 
 import os
-import sys
-import dill
-import random
-import collections
+import pickle
 import numpy as np
-from tqdm import tqdm
 from pprint import pprint
 from sklearn.svm import LinearSVC
 from sklearn.externals import joblib
 
-sys.path.append(os.path.abspath("utils"))
-import dbloader
-import load_save
 
 print(" - SVM - loading data")
 Xtrain = pickle.load(open("features_pretrained_X.pickle", "rb"))
@@ -39,8 +32,10 @@ clf.fit(Xtrain, preprocess(Ytrain))
 joblib.dump(clf, os.path.join("SVM_spadala","svm_clf.joblib"))
 
 
+
 print(" - SVM - evaluating")
 y_predicted = clf.predict(Xtest)
+
 
 
 print(" - SVM - confusion matrix")
