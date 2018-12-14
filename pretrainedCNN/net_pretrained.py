@@ -19,7 +19,7 @@ random.seed(42)
 
 img_shape = (240,800,3)
 num_classes = 23
-model_filename = "inceptionV3_pretrained.h5"
+model_filename = os.path.join("pretrained_CNN","inceptionV3_pretrained.h5")
 
 
 model = load_save.load_model(model_filename)
