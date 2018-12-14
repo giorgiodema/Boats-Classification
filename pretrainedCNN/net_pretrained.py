@@ -72,11 +72,11 @@ def load_test_features():
 Xtrain, Ytrain = load_train_features()
 Xtest, Ytest = load_test_features()
 
-
+# Comment this line to evaluate only
 model.fit(Xtrain, Ytrain, batch_size=32, epochs=14, verbose=1, validation_data=(Xtest, Ytest), shuffle=False)
 
 res = model.evaluate(Xtest, Ytest, verbose=1)
-print(res)
+print("Loss:", res[0], "\nAccuracy:", res[1])
 
 
 print("Saving...")
