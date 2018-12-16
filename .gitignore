@@ -9,3 +9,5 @@ raw/*
 *.jpg
 *.txt
 *.h5
+*.csv
+*.docx

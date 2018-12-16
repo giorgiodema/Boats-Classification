@@ -10,7 +10,7 @@ import dbloader
 
 path = join("raw","clf.pkl")
 img_shape = (240,800,3)
-num_classes = 23
+num_classes = 24
 
 Xtrain,Ytrain,img_shape,ids_labels,labels_ids = dbloader.load_trainingset(img_shape)
 Xtest,Ytest = dbloader.load_testset(img_shape,labels_ids)
