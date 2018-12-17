@@ -26,13 +26,14 @@ def load_classifier(path):
 class pretrainedCNN:
 
     def __init__(self,img_shape,num_classes):
-        base_model = InceptionV3(weights='imagenet',include_top=False,input_shape=img_shape)
+        base_model = InceptionV3(weights='imagenet',include_top=True,input_shape=img_shape)
         for layer in base_model.layers:
             layer.trainable=False
         print("ciao ciao")
+        base_model.layers.pop()
         bout = base_model.output
-        x = Flatten(name='clf_flatten')(bout)
-        x = Dense(name='clf_dense',units=1024,activation="relu")(x)
+        x = Dense(name='clf_dense',units=1024,activation="relu")(bout)
+        x = Dense(name='clf_dens2e',units=1024,activation="relu")(x)
         o = Dense(name='clf_output',units=num_classes,activation='softmax')(x)
 
         self.clf = Model(inputs=base_model.input,outputs=o)

@@ -2,10 +2,11 @@ import os
 from os.path import join
 import sys
 import numpy as np
-
+from sklearn.metrics import confusion_matrix
 import enc_classifier
 sys.path.append(os.path.abspath("utils"))
 import dbloader
+
 
 
 path = join("raw","enc_clf.pkl")
@@ -36,7 +37,7 @@ print("Loading classifier...")
 clf = enc_classifier.load_classifier(path)
 if not clf:
     clf = enc_classifier.AutoEncSVMclassifier(img_shape,num_classes)
-    clf.fit(Xtrain[()],y)
+    clf.fit(Xtrain[()],y,Xtest)
     print("Saving classifier...")
     enc_classifier.save_classifier(path,clf)
 
