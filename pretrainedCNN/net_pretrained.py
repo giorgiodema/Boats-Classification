@@ -3,63 +3,45 @@ import os
 from keras.applications.inception_v3 import InceptionV3
 from keras.preprocessing import image
 from keras.models import Model
-from keras.layers import Dense, GlobalAveragePooling2D
-from keras import backend as K
+from keras.layers import Dense, Flatten,Input,MaxPooling2D
+from keras.callbacks import CSVLogger
+from keras.backend import flatten
+import pickle
 sys.path.append(os.path.abspath("utils"))
 import dbloader
 import load_save
 
 
-img_shape = (800,240,3)
-num_classes = 24
-model_filename = "inceptionV3_pretrained.h5"
+def save_classifier(path,clf):
+    with open(path,"wb") as f:
+        pickle.dump(clf,f)
 
-model = load_save.load_model(model_filename)
-if not model:
-    print("Creating model...")
+def load_classifier(path):
+    clf = None
+    if os.path.exists(path):
+        with open(path,"rb") as f:
+            clf = pickle.load(f)
+    return clf
 
-    # create the base pre-trained model
-    base_model = InceptionV3(weights='imagenet', include_top=False, input_shape=(800,240,3))
+class pretrainedCNN:
 
-    # add a global spatial average pooling layer
-    x = base_model.output
-    x = GlobalAveragePooling2D()(x)
-    # let's add a fully-connected layer
-    x = Dense(1024, activation='relu')(x)
-    # and a logistic layer -- let's say we have 200 classes
-    predictions = Dense(num_classes, activation='softmax')(x)
+    def __init__(self,img_shape,num_classes):
+        base_model = InceptionV3(weights='imagenet',include_top=False,input_shape=img_shape)
+        for layer in base_model.layers:
+            layer.trainable=False
+        print("ciao ciao")
+        bout = base_model.output
+        x = Flatten(name='clf_flatten')(bout)
+        x = Dense(name='clf_dense',units=1024,activation="relu")(x)
+        o = Dense(name='clf_output',units=num_classes,activation='softmax')(x)
 
-    # this is the model we will train
-    model = Model(inputs=base_model.input, outputs=predictions)
+        self.clf = Model(inputs=base_model.input,outputs=o)
+        self.clf.compile(optimizer='rmsprop',loss='categorical_crossentropy',metrics=['accuracy'])
+        self.clf.summary()
 
-    # first: train only the top layers (which were randomly initialized)
-    # i.e. freeze all convolutional InceptionV3 layers
-    for layer in base_model.layers:
-      layer.trainable = False
+    def fit(self,X,Y,Xval,Yval):
+        self.clf.fit(X,Y, batch_size=16, validation_data=(Xval,Yval), epochs=20, verbose=1, shuffle=True, callbacks=[CSVLogger("pretrainedCNN.csv", separator=',', append=False)])
 
-    # compile the model (should be done *after* setting layers to non-trainable)
-    model.compile(optimizer='rmsprop', loss='categorical_crossentropy')
-
-model.summary()
-
-
-Xtrain,Ytrain,img_shape,ids_labels,labels_ids = dbloader.load_trainingset(img_shape)
-Xtest,Ytest = dbloader.load_testset(img_shape,labels_ids)
-#manz = model.evaluate(Xtest, Ytest)
-#print(manz)
-#raise Exception()
-
-
-try:                             #validation_data = (Xtest,Ytest)
-    model.fit(Xtrain, Ytrain, batch_size=64, epochs=10, verbose=1, shuffle='batch')
-except KeyboardInterrupt:
-    # Save the model
-    print("Saving...")
-    load_save.save_model(model, model_filename)
-    quit()
-
-
-# Save the model
-print("Saving...")
-load_save.save_model(model, model_filename)
-quit()
+    def predict(self,X):
+        y = self.clf.predict(X)
+        return y   
