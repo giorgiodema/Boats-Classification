@@ -61,13 +61,13 @@ class AutoEncSVMclassifier:
         print("Training encoder...")
         tensorboardpath = join('tmp','autoencoder')
         self.autoencoder.fit(X,X,
-                        epochs=2,
+                        epochs=1,
                         batch_size=16,
                         shuffle=True,
                         validation_data=(Xval, Xval),
                         callbacks=[TensorBoard(log_dir=tensorboardpath), CSVLogger(filename="encoder.csv")])
         x_encoded = self.encoder.predict(X)
-        x_encoded = reshape(x_encoded,(self.encoded_shape[0]*self.encoded_shape[1]*self.encoded_shape[2]))
+        x_encoded = np.reshape(x_encoded,(x_encoded.shape[0],self.encoded_shape[1]*self.encoded_shape[2]*self.encoded_shape[3]))
         print("training svm")
         self.clf.fit(x_encoded,y)
 
@@ -75,6 +75,6 @@ class AutoEncSVMclassifier:
     def predict(self,X):
 
         x_encoded = self.encoder.predict(X)
-        x_encoded = reshape(x_encoded,(self.encoded_shape[0]*self.encoded_shape[1]*self.encoded_shape[2],))
+        x_encoded = np.reshape(x_encoded,(self.encoded_shape[0]*self.encoded_shape[1]*self.encoded_shape[2],))
         y = self.clf.predict(x_encoded)
         return y

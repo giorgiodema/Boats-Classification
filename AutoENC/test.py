@@ -37,7 +37,7 @@ print("Loading classifier...")
 clf = enc_classifier.load_classifier(path)
 if not clf:
     clf = enc_classifier.AutoEncSVMclassifier(img_shape,num_classes)
-    clf.fit(Xtrain[()],y,Xtest)
+    clf.fit(Xtrain[()],ytrain,Xtest)
     print("Saving classifier...")
     enc_classifier.save_classifier(path,clf)
 
