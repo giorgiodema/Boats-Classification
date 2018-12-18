@@ -43,24 +43,24 @@ class AutoEncSVMclassifier:
             return
         print("Creating clf...")
         input_img = Input(shape=img_shape, name='input')  # adapt this if using `channels_first` image data format
-        x = Conv2D(256, (3, 3), activation='relu', padding='same')(input_img)
-        x = MaxPooling2D((2, 2), padding='same')(x)
-        x = Conv2D(128, (3, 3), activation='relu', padding='same')(x)
-        x = MaxPooling2D((2, 2), padding='same')(x)
-        x = Conv2D(64, (3, 3), activation='relu', padding='same')(x)
+        x = Conv2D(64, (3, 3), activation='relu', padding='same')(input_img)
         x = MaxPooling2D((2, 2), padding='same')(x)
         x = Conv2D(32, (3, 3), activation='relu', padding='same')(x)
+        x = MaxPooling2D((2, 2), padding='same')(x)
+        x = Conv2D(16, (3, 3), activation='relu', padding='same')(x)
+        x = MaxPooling2D((2, 2), padding='same')(x)
+        x = Conv2D(16, (3, 3), activation='relu', padding='same')(x)
         encoded = MaxPooling2D((2, 2), padding='same',name='encoded')(x)
 
         # at this point the representation is (4, 4, 8) i.e. 128-dimensional
 
-        x = Conv2D(32, (3, 3), activation='relu', padding='same')(encoded)
+        x = Conv2D(16, (3, 3), activation='relu', padding='same')(encoded)
         x = UpSampling2D((2, 2))(x)
-        x = Conv2D(64, (3, 3), activation='relu', padding='same')(x)
+        x = Conv2D(16, (3, 3), activation='relu', padding='same')(x)
         x = UpSampling2D((2, 2))(x)
-        x = Conv2D(128, (3, 3), activation='relu', padding='same')(x)
+        x = Conv2D(32, (3, 3), activation='relu', padding='same')(x)
         x = UpSampling2D((2, 2))(x)
-        x = Conv2D(256, (3, 3), activation='relu',padding='same')(x)
+        x = Conv2D(64, (3, 3), activation='relu',padding='same')(x)
         x = UpSampling2D((2, 2))(x)
         decoded = Conv2D(3, (3, 3), activation='sigmoid', padding='same')(x)
 
@@ -79,7 +79,7 @@ class AutoEncSVMclassifier:
         try:
             self.autoencoder.fit(X,X,
                             epochs=100,
-                            batch_size=16,
+                            batch_size=2,
                             shuffle=True,
                             validation_data=(Xval, Xval),
                             callbacks=[TensorBoard(log_dir=tensorboardpath), CSVLogger(filename="encoder.csv"),ModelCheckpoint(model_path, monitor='val_loss', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)])
