@@ -61,7 +61,7 @@ class AutoEncSVMclassifier:
         print("Training encoder...")
         tensorboardpath = join('tmp','autoencoder')
         self.autoencoder.fit(X,X,
-                        epochs=100,
+                        epochs=2,
                         batch_size=16,
                         shuffle=True,
                         validation_data=(Xval, Xval),
