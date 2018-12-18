@@ -13,6 +13,9 @@ import sklearn.svm
 import numpy as np
 sys.path.append(os.path.abspath("utils"))
 import dbloader
+import load_save
+
+model_path = join("raw","encoder02.h5")
 
 
 def save_classifier(path,clf):
@@ -29,30 +32,35 @@ def load_classifier(path):
 class AutoEncSVMclassifier:
 
     def __init__(self,img_shape, num_cat):
-        input_img = Input(shape=img_shape)  # adapt this if using `channels_first` image data format
 
-        x = Conv2D(16, (3, 3), activation='relu', padding='same')(input_img)
+        self.autoencoder = load_save.load_model(model_path)
+        if self.autoencoder:
+            print("Loading saved clf...")
+            self.autoencoder.summary()
+            self.encoder = Model(self.autoencoder.get_layer(name='input'),self.autoencoder.get_layer(name='encoded'))
+            self.encoded_shape = self.autoencoder.get_layer(name='encoded').output_shape
+            self.clf = sklearn.svm.LinearSVC(max_iter=100000)
+            return
+        print("Creating clf...")
+        input_img = Input(shape=img_shape, name='input')  # adapt this if using `channels_first` image data format
+        x = Conv2D(256, (3, 3), activation='relu', padding='same')(input_img)
         x = MaxPooling2D((2, 2), padding='same')(x)
-        x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)
+        x = Conv2D(128, (3, 3), activation='relu', padding='same')(x)
         x = MaxPooling2D((2, 2), padding='same')(x)
-        x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)
+        x = Conv2D(64, (3, 3), activation='relu', padding='same')(x)
         x = MaxPooling2D((2, 2), padding='same')(x)
-        x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)
-        x = MaxPooling2D((5, 5), padding='same')(x)
-        x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)
+        x = Conv2D(32, (3, 3), activation='relu', padding='same')(x)
         encoded = MaxPooling2D((2, 2), padding='same',name='encoded')(x)
 
         # at this point the representation is (4, 4, 8) i.e. 128-dimensional
 
-        x = Conv2D(8, (3, 3), activation='relu', padding='same')(encoded)
-        x = UpSampling2D((5, 5))(x)
-        x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)
+        x = Conv2D(32, (3, 3), activation='relu', padding='same')(encoded)
         x = UpSampling2D((2, 2))(x)
-        x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)
+        x = Conv2D(64, (3, 3), activation='relu', padding='same')(x)
         x = UpSampling2D((2, 2))(x)
-        x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)
+        x = Conv2D(128, (3, 3), activation='relu', padding='same')(x)
         x = UpSampling2D((2, 2))(x)
-        x = Conv2D(16, (3, 3), activation='relu',padding='same')(x)
+        x = Conv2D(256, (3, 3), activation='relu',padding='same')(x)
         x = UpSampling2D((2, 2))(x)
         decoded = Conv2D(3, (3, 3), activation='sigmoid', padding='same')(x)
 
@@ -68,12 +76,15 @@ class AutoEncSVMclassifier:
     def fit(self,X,y,Xval):
         print("Training encoder...")
         tensorboardpath = join('tmp','autoencoder')
-        self.autoencoder.fit(X,X,
-                        epochs=100,
-                        batch_size=16,
-                        shuffle=True,
-                        validation_data=(Xval, Xval),
-                        callbacks=[TensorBoard(log_dir=tensorboardpath), CSVLogger(filename="encoder.csv")])
+        try:
+            self.autoencoder.fit(X,X,
+                            epochs=3,
+                            batch_size=16,
+                            shuffle=True,
+                            validation_data=(Xval, Xval),
+                            callbacks=[TensorBoard(log_dir=tensorboardpath), CSVLogger(filename="encoder.csv")])
+        except KeyboardInterrupt:
+            load_save.save_model(self.autoencoder,model_path)
         x_encoded = self.encoder.predict(X)
         x_encoded = np.reshape(x_encoded,(x_encoded.shape[0],self.encoded_shape[1]*self.encoded_shape[2]*self.encoded_shape[3]))
         print("training svm")
@@ -83,6 +94,6 @@ class AutoEncSVMclassifier:
     def predict(self,X):
 
         x_encoded = self.encoder.predict(X)
-        x_encoded = np.reshape(x_encoded,(self.encoded_shape[0]*self.encoded_shape[1]*self.encoded_shape[2],))
+        x_encoded = np.reshape(x_encoded,(x_encoded.shape[0],self.encoded_shape[1]*self.encoded_shape[2]*self.encoded_shape[3]))
         y = self.clf.predict(x_encoded)
         return y
