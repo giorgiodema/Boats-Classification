@@ -38,17 +38,17 @@ class AutoEncSVMclassifier:
         x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)
         x = MaxPooling2D((2, 2), padding='same')(x)
         x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)
-        x = MaxPooling2D((2, 2), padding='same')(x)
+        x = MaxPooling2D((5, 5), padding='same')(x)
         x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)
         encoded = MaxPooling2D((2, 2), padding='same',name='encoded')(x)
 
         # at this point the representation is (4, 4, 8) i.e. 128-dimensional
 
         x = Conv2D(8, (3, 3), activation='relu', padding='same')(encoded)
+        x = UpSampling2D((5, 5))(x)
+        x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)
         x = UpSampling2D((2, 2))(x)
-        x = Conv2D(8, (3, 3), activation='relu', padding='same')(encoded)
-        x = UpSampling2D((2, 2))(x)
-        x = Conv2D(8, (3, 3), activation='relu', padding='same')(encoded)
+        x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)
         x = UpSampling2D((2, 2))(x)
         x = Conv2D(8, (3, 3), activation='relu', padding='same')(x)
         x = UpSampling2D((2, 2))(x)
@@ -69,7 +69,7 @@ class AutoEncSVMclassifier:
         print("Training encoder...")
         tensorboardpath = join('tmp','autoencoder')
         self.autoencoder.fit(X,X,
-                        epochs=1,
+                        epochs=100,
                         batch_size=16,
                         shuffle=True,
                         validation_data=(Xval, Xval),
