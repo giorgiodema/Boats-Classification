@@ -1,11 +1,13 @@
 import sys
 import os
+from os.path import join
 import pickle
 from keras.preprocessing import image
 from keras.layers import Input,Conv2D,MaxPooling2D,UpSampling2D
 from keras.models import Model
 from keras.backend import reshape,flatten
 from keras.callbacks import CSVLogger, TensorBoard
+from keras.optimizers import Adadelta, SGD
 
 import sklearn.svm
 import numpy as np
@@ -47,6 +49,8 @@ class AutoEncSVMclassifier:
         decoded = Conv2D(3, (3, 3), activation='sigmoid', padding='same')(x)
 
         self.autoencoder = Model(input_img, decoded)
+        #ada = Adadelta(lr=1.0, rho=0.95, epsilon=None, decay=0.0)
+        #sgd = SGD(lr=0.2, momentum=0.1, decay=0.001, nesterov=False)
         self.autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy',metrics=['accuracy'])
         self.encoder = Model(input_img,encoded)
         self.encoded_shape = self.autoencoder.get_layer(name='encoded').output_shape
@@ -55,14 +59,15 @@ class AutoEncSVMclassifier:
 
     def fit(self,X,y,Xval):
         print("Training encoder...")
+        tensorboardpath = join('tmp','autoencoder')
         self.autoencoder.fit(X,X,
-                        epochs=50,
+                        epochs=100,
                         batch_size=16,
                         shuffle=True,
                         validation_data=(Xval, Xval),
-                        callbacks=[TensorBoard(log_dir='/tmp/autoencoder'), CSVLogger(filename="encoder.csv")])
+                        callbacks=[TensorBoard(log_dir=tensorboardpath), CSVLogger(filename="encoder.csv")])
         x_encoded = self.encoder.predict(X)
-        x_encoded = reshape(X,(self.encoded_shape[0]*self.encoded_shape[1]*self.encoded_shape[2],))
+        x_encoded = reshape(x_encoded,(self.encoded_shape[0]*self.encoded_shape[1]*self.encoded_shape[2]))
         print("training svm")
         self.clf.fit(x_encoded,y)
 
@@ -70,6 +75,6 @@ class AutoEncSVMclassifier:
     def predict(self,X):
 
         x_encoded = self.encoder.predict(X)
-        x_encoded = reshape(X,(self.encoded_shape[0]*self.encoded_shape[1]*self.encoded_shape[2],))
+        x_encoded = reshape(x_encoded,(self.encoded_shape[0]*self.encoded_shape[1]*self.encoded_shape[2],))
         y = self.clf.predict(x_encoded)
         return y
