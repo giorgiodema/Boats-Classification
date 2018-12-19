@@ -46,22 +46,19 @@ class AutoEncSVMclassifier:
         x = Conv2D(8, (3, 3), activation='relu', padding='same')(input_img)
         x = MaxPooling2D((2, 2), padding='same')(x)
         x = Conv2D(16, (3, 3), activation='relu', padding='same')(x)
-        x = MaxPooling2D((4, 4), padding='same')(x)
-        x = Conv2D(16, (3, 3), activation='relu', padding='same')(x)
         x = MaxPooling2D((10, 10), padding='same')(x)
+        x = Conv2D(32, (3, 3), activation='relu', padding='same')(x)
+        x = MaxPooling2D((2, 2), padding='same')(x)
         x = Conv2D(64, (3, 3), activation='relu', padding='same')(x)
-        x = Flatten()(x)
-        x = Dense(units=3*10*64,activation='relu')(x)
-        encoded = Dense(units=960,activation='relu',name='encoded')(x)
+        encoded = Flatten(name='encoded')(x)
 
 
         # at this point the representation is (4, 4, 8) i.e. 128-dimensional
-        x = Dense(units=3*10*64)(encoded)
-        x = Reshape((3,10,64))(x)
+        x = Reshape((6,20,64))(encoded)
         x = Conv2D(64, (3, 3), activation='relu', padding='same')(x)
         x = UpSampling2D((10, 10))(x)
-        x = Conv2D(16, (3, 3), activation='relu', padding='same')(x)
-        x = UpSampling2D((4, 4))(x)
+        x = Conv2D(32, (3, 3), activation='relu', padding='same')(x)
+        x = UpSampling2D((2, 2))(x)
         x = Conv2D(16, (3, 3), activation='relu', padding='same')(x)
         x = UpSampling2D((2, 2))(x)
         x = Conv2D(8, (3, 3), activation='relu',padding='same')(x)
@@ -79,8 +76,8 @@ class AutoEncSVMclassifier:
         tensorboardpath = join('tmp','autoencoder')
         try:
             self.autoencoder.fit(X,X,
-                            epochs=100,
-                            batch_size=16,
+                            epochs=1,
+                            batch_size=8,
                             shuffle=True,
                             validation_data=(Xval, Xval),
                             callbacks=[TensorBoard(log_dir=tensorboardpath), CSVLogger(filename="encoder.csv"),ModelCheckpoint(model_path, monitor='val_loss', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)])
