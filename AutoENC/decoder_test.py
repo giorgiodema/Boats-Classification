@@ -5,6 +5,7 @@ import numpy as np
 import enc_classifier
 from matplotlib import pyplot as plt
 from PIL import Image
+import random
 sys.path.append(os.path.abspath("utils"))
 import dbloader
 import load_save
@@ -16,16 +17,17 @@ num_classes = 24
 Xtrain,Ytrain,img_shape,ids_labels,labels_ids = dbloader.load_trainingset(img_shape)
 Xtest,Ytest = dbloader.load_testset(img_shape,labels_ids)
 
-model_path = join("raw","encoder02.h5")
+model_path = join("raw","encoder03.h5")
 
 model = load_save.load_model(model_path)
 if not model:
     raise Exception("No model...")
 
-originals = Xtrain[30:40]
+originals = Xtrain[0:10]
 predicted = model.predict(originals)
 
 for i in range(originals.shape[0]):
+    i = i+random.randint(0,originals.shape[0]-10)
     o = originals[i] * 255
     p = predicted[i] * 255
     o = o.astype(np.int32)
