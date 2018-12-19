@@ -1,6 +1,6 @@
 from keras.layers import Input, Dense, Conv2D, MaxPool2D, Flatten, Dropout
 from keras.models import Model
-from keras.callbacks import CSVLogger, ModelCheckpoint
+from keras.callbacks import CSVLogger, ModelCheckpoint, TensorBoard
 import os
 import pickle
 from datetime import datetime
@@ -53,7 +53,8 @@ class ConvolutionalNN:
         self.model.compile(optimizer='rmsprop',loss='categorical_crossentropy',metrics=['accuracy'])
         self.model.summary()
     def fit(self,X,Y,Xval,Yval):
-        self.model.fit(X,Y, batch_size=64, validation_data=(Xval,Yval), epochs=20, verbose=1, shuffle=True, callbacks=[CSVLogger("CNNlogger.csv", separator=',', append=False),ModelCheckpoint(model_path, monitor='val_loss', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)])
+        tensorboardpath = join('tmp','CNN')
+        self.model.fit(X,Y, batch_size=64, validation_data=(Xval,Yval), epochs=20, verbose=1, shuffle=True, callbacks=[TensorBoard(log_dir=tensorboardpath),CSVLogger("CNNlogger.csv", separator=',', append=False),ModelCheckpoint(model_path, monitor='val_loss', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)])
 
     def predict(self,X):
         return self.model.predict(X)
