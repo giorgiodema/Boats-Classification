@@ -38,11 +38,13 @@ class ConvolutionalNN:
         # Flatten  --> output shape = (12*40*9) = 4320
         fl = Flatten()(p3)
         # Dropout
-        dr1 = Dropout(rate=0.4,seed=Date)
+        dr1 = Dropout(rate=0.4,seed=datetime.now())(fl)
         # FC layer --> parameters = 4320*864 = 1'440'000
-        d1 = Dense(units=864,activation='relu')(fl)
+        d1 = Dense(units=864,activation='relu')(dr1)
+        #Dropout
+        dr2 = Dropout(rate=0.4,seed=datetime.now())(d1)
         # FC layer --> parameters = 864*432 = 60'000
-        d2 = Dense(units=432,activation='relu')(d1)
+        d2 = Dense(units=432,activation='relu')(dr2)
         output = Dense(units=num_cat,activation='softmax')(d2)
         # TOTAL TRAINABLE PARAMETERS --> 1'503'780
 
