@@ -80,7 +80,7 @@ class AutoEncSVMclassifier:
                             batch_size=8,
                             shuffle=True,
                             validation_data=(Xval, Xval),
-                            callbacks=[TensorBoard(log_dir=tensorboardpath), CSVLogger(filename="encoder.csv"),ModelCheckpoint(model_path, monitor='val_loss', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)])
+                            callbacks=[TensorBoard(log_dir=tensorboardpath), CSVLogger(filename="encoder.csv"),ModelCheckpoint(model_path, monitor='val_acc', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)])
         except KeyboardInterrupt:
             if not os.path.exists(model_path):
                 load_save.save_model(self.autoencoder,model_path)
