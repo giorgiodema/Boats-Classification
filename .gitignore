@@ -11,5 +11,4 @@ raw/*
 *.h5
 *.csv
 *.docx
-*.WINDOWS-DEMA
-*.SURFACE-DEMA
+tmp/*

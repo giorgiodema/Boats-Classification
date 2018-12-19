@@ -17,7 +17,7 @@ num_classes = 24
 Xtrain,Ytrain,img_shape,ids_labels,labels_ids = dbloader.load_trainingset(img_shape)
 Xtest,Ytest = dbloader.load_testset(img_shape,labels_ids)
 
-model_path = join("raw","encoder03.h5")
+model_path = join("raw","encoder04.h5")
 
 model = load_save.load_model(model_path)
 if not model:

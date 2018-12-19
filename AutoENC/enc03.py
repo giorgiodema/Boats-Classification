@@ -15,7 +15,7 @@ sys.path.append(os.path.abspath("utils"))
 import dbloader
 import load_save
 
-model_path = join("raw","encoder04.h5")
+model_path = join("raw","encoder03.h5")
 
 
 def save_classifier(path,clf):
@@ -46,26 +46,29 @@ class AutoEncSVMclassifier:
         x = Conv2D(8, (3, 3), activation='relu', padding='same')(input_img)
         x = MaxPooling2D((2, 2), padding='same')(x)
         x = Conv2D(16, (3, 3), activation='relu', padding='same')(x)
+        x = MaxPooling2D((4, 4), padding='same')(x)
+        x = Conv2D(16, (3, 3), activation='relu', padding='same')(x)
         x = MaxPooling2D((10, 10), padding='same')(x)
-        x = Conv2D(32, (3, 3), activation='relu', padding='same')(x)
-        x = MaxPooling2D((2, 2), padding='same')(x)
         x = Conv2D(64, (3, 3), activation='relu', padding='same')(x)
-        encoded = Flatten(name='encoded')(x)
+        x = Flatten()(x)
+        x = Dense(units=3*10*64,activation='relu')(x)
+        encoded = Dense(units=960,activation='relu',name='encoded')(x)
 
 
         # at this point the representation is (4, 4, 8) i.e. 128-dimensional
-        x = Reshape((6,20,64))(encoded)
+        x = Dense(units=3*10*64)(encoded)
+        x = Reshape((3,10,64))(x)
         x = Conv2D(64, (3, 3), activation='relu', padding='same')(x)
         x = UpSampling2D((10, 10))(x)
-        x = Conv2D(32, (3, 3), activation='relu', padding='same')(x)
-        x = UpSampling2D((2, 2))(x)
+        x = Conv2D(16, (3, 3), activation='relu', padding='same')(x)
+        x = UpSampling2D((4, 4))(x)
         x = Conv2D(16, (3, 3), activation='relu', padding='same')(x)
         x = UpSampling2D((2, 2))(x)
         x = Conv2D(8, (3, 3), activation='relu',padding='same')(x)
         decoded = Conv2D(3, (3, 3), activation='sigmoid', padding='same')(x)
 
         self.autoencoder = Model(input_img, decoded)
-        self.autoencoder.compile(optimizer='adam', loss='categorical_crossentropy',metrics=['accuracy'])
+        self.autoencoder.compile(optimizer='rmsprop', loss='categorical_crossentropy',metrics=['accuracy'])
         self.encoder = Model(input_img,encoded)
         self.encoded_shape = self.autoencoder.get_layer(name='encoded').output_shape
         self.autoencoder.summary()
@@ -77,7 +80,7 @@ class AutoEncSVMclassifier:
         try:
             self.autoencoder.fit(X,X,
                             epochs=100,
-                            batch_size=8,
+                            batch_size=16,
                             shuffle=True,
                             validation_data=(Xval, Xval),
                             callbacks=[TensorBoard(log_dir=tensorboardpath), CSVLogger(filename="encoder.csv"),ModelCheckpoint(model_path, monitor='val_loss', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)])
