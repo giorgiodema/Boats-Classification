@@ -2,6 +2,7 @@ from keras.layers import Input, Dense, Conv2D, MaxPool2D, Flatten, Dropout
 from keras.models import Model
 from keras.callbacks import CSVLogger, ModelCheckpoint, TensorBoard
 import os
+from os.path import join
 import pickle
 from datetime import datetime
 
@@ -16,7 +17,7 @@ def load_classifier(path):
             clf = pickle.load(f)
     return clf
 
-model_path = "CNN.h5"
+model_path = join("raw","CNN.h5")
 
 class ConvolutionalNN:
     def __init__(self,img_shape, num_cat):
@@ -54,7 +55,7 @@ class ConvolutionalNN:
         self.model.summary()
     def fit(self,X,Y,Xval,Yval):
         tensorboardpath = join('tmp','CNN')
-        self.model.fit(X,Y, batch_size=64, validation_data=(Xval,Yval), epochs=20, verbose=1, shuffle=True, callbacks=[TensorBoard(log_dir=tensorboardpath),CSVLogger("CNNlogger.csv", separator=',', append=False),ModelCheckpoint(model_path, monitor='val_loss', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)])
+        self.model.fit(X,Y, batch_size=64, validation_data=(Xval,Yval), epochs=20, verbose=1, shuffle=True, callbacks=[TensorBoard(log_dir=tensorboardpath),ModelCheckpoint(model_path, monitor='val_loss', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)])
 
     def predict(self,X):
         return self.model.predict(X)

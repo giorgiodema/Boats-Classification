@@ -15,7 +15,7 @@ sys.path.append(os.path.abspath("utils"))
 import dbloader
 import load_save
 
-model_path = join("raw","encoder04.h5")
+model_path = join("raw","encoder.h5")
 
 
 def save_classifier(path,clf):
@@ -45,43 +45,38 @@ class AutoEncSVMclassifier:
 
         # The input layer is a matrix with shape(240,800,3)
         input_img = Input(shape=img_shape, name='input')
-        # 6 filters (5,5)   --> shape = (240,800); parameters = 100
-        x = Conv2D(filters=6, kernel_size=(5,5),padding='same',activation='relu')(input_img)
-        # MaxPooling (2,2)  --> shape = (120,400,3)
+        # 21 filters (5,5)   --> shape = (240,800)
+        x = Conv2D(filters=21, kernel_size=(5,5),padding='same',activation='relu')(input_img)
+        # MaxPooling (2,2)  -->  shape = (120,400,21)
         x = MaxPooling2D(pool_size=(2,2))(x)
-        # 9 filters (5,5)   --> shape = (120,400,9); parameters = (5*5*8)*4 = 800
+        # 18 filters (5,5)   -->  shape = (120,400,18)
+        x = Conv2D(filters=18,kernel_size=(5,5),padding='same',activation='relu')(x)
+        # MaxPooling (2,2)-->    shape = (60,200,18)
+        x = MaxPooling2D(pool_size=(2,2))(x)
+        # 9 filters (5,5)   --> shape = (60,200,9)
         x = Conv2D(filters=9,kernel_size=(5,5),padding='same',activation='relu')(x)
-        # MaxPooling (2,2)--> shape = (60,200,9)
-        x = MaxPooling2D(pool_size=(2,2))(x)
-        # 12 filters (5,5)   --> shape = (60,200,12); parameters = (5*5*8)*4 = 800
-        x = Conv2D(filters=12,kernel_size=(5,5),padding='same',activation='relu')(x)
-        # MaxPooling (5,5)--> shape = (12,40,12)
-        x = MaxPooling2D(pool_size=(5,5))(x)
+        # MaxPooling (4,4)--> shape = (15,50,9)
+        x = MaxPooling2D(pool_size=(4,4))(x)
 
-        # Flatten  --> output shape = (12*40*12) = 5760
-        x = Flatten()(x)
-        # Dropout
-        x = Dropout(rate=0.4,seed=None)(x)
-        # FC layer --> parameters = 4320*2160 = 1'440'000
-        encoded = Dense(units=2880,activation='relu',name='encoded')(x)
- 
-        x = Dropout(rate=0.4,seed=None)(encoded)
-        # shape = 4320
-        x = Dense(units=5760,activation='relu')(x)
-        # shape = (12,40,9)
-        x = Reshape((12,40,12))(x)
-        # shape = (12,40,9)
+        # Flatten  --> output shape = (15*50*9) = 6750
+        encoded = Flatten(name='encoded')(x)
+
+        # shape = (15,50,9)
+        x = Reshape((15,50,9))(encoded)
+        # shape = (15,50,9)
         x = Conv2D(filters=9,kernel_size=(5,5),padding='same',activation='relu')(x)
         # shape = (60,200,9)
-        x = UpSampling2D(size=(5,5))(x)
-        # shape = (60,200,9)
-        x = Conv2D(filters=9,kernel_size=(5,5),padding='same',activation='relu')(x)
-        # shape = (120,400,9)
+        x = UpSampling2D(size=(4,4))(x)
+        # shape = (60,200,15)
+        x = Conv2D(filters=15,kernel_size=(5,5),padding='same',activation='relu')(x)
+        # shape = (120,400,15)
         x = UpSampling2D(size=(2,2))(x)
-        # shape = (120,400,3)
-        x = Conv2D(filters=3,kernel_size=(5,5),padding='same',activation='relu')(x)
-        # shape = (240,800,3)
-        decoded = UpSampling2D(size=(2,2))(x)
+        # shape = (120,400,21)
+        x = Conv2D(filters=21,kernel_size=(5,5),padding='same',activation='relu')(x)
+        # shape = (240,800,21)
+        x = UpSampling2D(size=(2,2))(x)
+        # shape = (240,480,3)
+        decoded = Conv2D(filters=3,kernel_size=(5,5),padding='same',activation='sigmoid')(x)
 
 
 
@@ -98,11 +93,11 @@ class AutoEncSVMclassifier:
         tensorboardpath = join('tmp','autoencoder')
         try:
             self.autoencoder.fit(X,X,
-                            epochs=100,
-                            batch_size=8,
+                            epochs=40,
+                            batch_size=16,
                             shuffle=True,
                             validation_data=(Xval, Xval),
-                            callbacks=[TensorBoard(log_dir=tensorboardpath), CSVLogger(filename="encoder.csv"),ModelCheckpoint(model_path, monitor='val_acc', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)])
+                            callbacks=[TensorBoard(log_dir=tensorboardpath),ModelCheckpoint(model_path, monitor='val_acc', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)])
         except KeyboardInterrupt:
             if not os.path.exists(model_path):
                 load_save.save_model(self.autoencoder,model_path)
