@@ -68,7 +68,7 @@ class AutoEncSVMclassifier:
         decoded = Conv2D(3, (3, 3), activation='sigmoid', padding='same')(x)
 
         self.autoencoder = Model(input_img, decoded)
-        self.autoencoder.compile(optimizer='sgd', loss='categorical_crossentropy',metrics=['accuracy'])
+        self.autoencoder.compile(optimizer='rmsprop', loss='categorical_crossentropy',metrics=['accuracy'])
         self.encoder = Model(input_img,encoded)
         self.encoded_shape = self.autoencoder.get_layer(name='encoded').output_shape
         self.autoencoder.summary()
