@@ -18,11 +18,10 @@ assert(Xtrain[0].shape == Xtest[0].shape)
 assert(Ytrain[0].shape == Ytest[0].shape)
 
 
-
+# Converts from one-hot to categorical
 def preprocess_y(y):
 	y = np.asarray(y)
 	i, j = np.where(y == 1)
-	print(i)
 	return j
 
 
