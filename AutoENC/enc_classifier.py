@@ -15,7 +15,7 @@ sys.path.append(os.path.abspath("utils"))
 import dbloader
 import load_save
 
-model_path = join("raw","encoder02.h5")
+model_path = join("raw","encoder03.h5")
 
 
 def save_classifier(path,clf):
@@ -79,7 +79,7 @@ class AutoEncSVMclassifier:
         tensorboardpath = join('tmp','autoencoder')
         try:
             self.autoencoder.fit(X,X,
-                            epochs=1,
+                            epochs=100,
                             batch_size=16,
                             shuffle=True,
                             validation_data=(Xval, Xval),

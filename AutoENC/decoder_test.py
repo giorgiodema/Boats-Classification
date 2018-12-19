@@ -3,6 +3,7 @@ from os.path import join
 import sys
 import numpy as np
 import enc_classifier
+from matplotlib import pyplot as plt
 from PIL import Image
 sys.path.append(os.path.abspath("utils"))
 import dbloader
@@ -17,7 +18,7 @@ Xtest,Ytest = dbloader.load_testset(img_shape,labels_ids)
 
 model_path = join("raw","encoder02.h5")
 
-model = load_save(model_path)
+model = load_save.load_model(model_path)
 if not model:
     raise Exception("No model...")
 
@@ -25,14 +26,15 @@ originals = Xtrain[30:40]
 predicted = model.predict(originals)
 
 for i in range(originals.shape[0]):
-    o = originals[i]
-    o = Image.fromarray(o)
-    p = predicted[i]
-    p = Image.fromarray(p)
-    o_path = join("raw","originals",str(i)+".jpeg")
-    p_path = join("raw","predicted",str(i)+".jpeg")
-    o.save(o_path)
-    p.save(p_path)
+    o = originals[i] * 255
+    p = predicted[i] * 255
+    o = o.astype(np.int32)
+    p = p.astype(np.int32)
+    plt.imshow(o)
+    plt.show()
+    plt.imshow(p)
+    plt.show()
+
     
 
 
