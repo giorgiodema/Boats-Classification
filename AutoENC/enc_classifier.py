@@ -80,7 +80,6 @@ class AutoEncSVMclassifier:
 
 
 
-
         self.autoencoder = Model(input_img, decoded)
         self.autoencoder.compile(optimizer='adam', loss='categorical_crossentropy',metrics=['accuracy'])
         self.encoder = Model(input_img,encoded)

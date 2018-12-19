@@ -17,17 +17,16 @@ num_classes = 24
 Xtrain,Ytrain,img_shape,ids_labels,labels_ids = dbloader.load_trainingset(img_shape)
 Xtest,Ytest = dbloader.load_testset(img_shape,labels_ids)
 
-path = join("raw","enc_clf.pkl")
+path = join("raw","encoder.h5")
 
-clf = enc_classifier.load_classifier(path)
-if not clf:
+model = load_save.load_model(path)
+if not model:
     raise Exception("Missing encoder")
 
-originals = Xtrain[0:Xtrain.shape[0]/4]
-predicted = clf.encoder.predict(originals)
+originals = Xtrain[0:10]
+predicted = model.predict(originals)
 
 for i in range(10):
-    i = i+random.randint(0,originals.shape[0]-10)
     o = originals[i] * 255
     p = predicted[i] * 255
     o = o.astype(np.int32)
