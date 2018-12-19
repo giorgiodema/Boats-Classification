@@ -1,7 +1,7 @@
 import sys
 import os
 from os.path import join
-import pickle
+from sklearn.externals import joblib
 from keras.preprocessing import image
 from keras.layers import Input,Conv2D,MaxPooling2D,UpSampling2D,Flatten,Dense, Reshape,Dropout
 from keras.models import Model
@@ -20,13 +20,13 @@ model_path = join("raw","encoder04.h5")
 
 def save_classifier(path,clf):
     with open(path,"wb") as f:
-        pickle.dump(clf,f)
+        joblib.dump(clf,f)
 
 def load_classifier(path):
     clf = None
     if os.path.exists(path):
         with open(path,"rb") as f:
-            clf = pickle.load(f)
+            clf = joblib.load(f)
     return clf
 
 class AutoEncSVMclassifier:
