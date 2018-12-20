@@ -23,18 +23,25 @@ model = load_save.load_model(path)
 if not model:
     raise Exception("Missing encoder")
 
-originals = Xtrain[0:10]
+originals = Xtest[()]
 predicted = model.predict(originals)
 
-for i in range(10):
-    o = originals[i] * 255
-    p = predicted[i] * 255
+original_path = join("raw","visualization","originals")
+decoded_path = join("raw","visualization","decoded")
+for i in range(20):
+    k = random.randint(0,len(Xtest)-1)
+    fig_name = str(i) + ".png"
+    o_path = join(original_path,fig_name)
+    p_path = join(decoded_path,fig_name)
+
+    o = originals[k] * 255
+    p = predicted[k] * 255
     o = o.astype(np.int32)
     p = p.astype(np.int32)
     plt.imshow(o)
-    plt.show()
+    plt.savefig(o_path)
     plt.imshow(p)
-    plt.show()
+    plt.savefig(p_path)
 
     
 

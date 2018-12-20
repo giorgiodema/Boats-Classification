@@ -11,4 +11,5 @@ raw/*
 *.h5
 *.csv
 *.docx
+*.png
 tmp/*
