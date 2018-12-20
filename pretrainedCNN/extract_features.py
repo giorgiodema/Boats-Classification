@@ -18,15 +18,17 @@ num_classes = 23
 base_model = InceptionV3(weights='imagenet', include_top=False, input_shape=img_shape)
 
 # Add a pooling layer to the last convolutional output
-x = GlobalAveragePooling2D()(base_model.layers[-1].output)
+# TODO: test code, before it was global average pooling without flattening
+x = keras.layers.MaxPooling2D(pool_size=(2, 2))(base_model.layers[-1].output)
+x = keras.layers.Flatten()(x)
 base_model = Model(base_model.input, x)
 
-# Now the new model will output a vector oh size 2048
 
 
 
 # - Training set -
-Xtrain,Ytrain,img_shape,ids_labels,labels_ids = dbloader.load_trainingset(img_shape)
+#Xtrain,Ytrain,img_shape,ids_labels,labels_ids = dbloader.load_trainingset(img_shape)
+Xtrain,Ytrain,img_shape,labels_ids = dbloader.load_trainingset(img_shape)
 # Extract features for training set
 Xtrain_feat = base_model.predict(Xtrain, verbose=1)
 
