@@ -50,8 +50,11 @@ def load_testset(img_shape,labels_ids):
         print("Creating testset...")
         with open(join("dataset","ARGOStest","ground_truth.txt"),"r") as f:
             aux = f.read().split('\n')
+            #TODO clean code: remove list( ... )
+            # Read csv-like data
             aux = list(filter(lambda x: re.match(r'.*;.*',x),aux))
             aux = list(map(lambda x: (x.split(';')[0],x.split(';')[1].replace(' ','').replace(':','')),aux))
+            # Filter out classes that are not present in training set
             aux = list(filter(lambda x:x[1] in labels_ids.keys(),aux))
             ground = {k:v for (k,v) in aux}
 
@@ -65,12 +68,15 @@ def load_testset(img_shape,labels_ids):
         for i in range(len(paths)):
             img = PIL.Image.open(join("dataset","ARGOStest","")+paths[i])
             width, height = img.size
+            # TODO: test code, if not exception raised delete these rows
             if width != img_shape[1] or height != img_shape[0]:
-                img = img.resize((img_shape[1], img_shape[0]))
+                #img = img.resize((img_shape[1], img_shape[0]))
+                raise Exception()
             if img.mode == 'L':
-                img.convert_color('RGB')
+                #img.convert_color('RGB')
+                raise Exception()
             img.load()
-            dataset['X'][i] = np.asarray(img, dtype="float32") / 255
+            dataset['X'][i] = np.asarray(img, dtype="float32") / 255   #normalize
             y = np.zeros(shape = d_labelshape[1])
             y[labels_ids[  ground[paths[i]]  ]] = 1
             dataset['Y'][i] = y
