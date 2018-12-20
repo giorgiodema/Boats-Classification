@@ -16,7 +16,7 @@ img_shape = (240,800,3)
 path = join("raw","CNN.pkl")
 plt_path = 'raw'
 
-layer_to_print = 5
+layer_to_print = 2
 
 Xtrain,Ytrain,img_shape,ids_labels,labels_ids = dbloader.load_trainingset(img_shape)
 Xtest,Ytest = dbloader.load_testset(img_shape,labels_ids)
@@ -42,8 +42,8 @@ if not os.path.exists(filters_path):
     os.makedirs(originals_path)
 for i in range(20):
     fig_name = str(i) + ".png"
-    k = random.randint(0,len(Xtest)-1)
-
+    #k = random.randint(0,len(Xtest)-1)
+    k = i + 20
     # printing original image
     o_path = join(originals_path,fig_name)
     o = originals[k] * 255
@@ -62,19 +62,6 @@ for i in range(20):
         plt.imshow(f)
         plt.savefig(p)
 
-    """
-    fig_name = str(i) + ".png"
-    o_path = join(original_path,fig_name)
-    p_path = join(decoded_path,fig_name)
 
-    o = originals[k] * 255
-    p = predicted[k] * 255
-    o = o.astype(np.int32)
-    p = p.astype(np.int32)
-    plt.imshow(o)
-    plt.savefig(o_path)
-    plt.imshow(p)
-    plt.savefig(p_path)
-    """
 print("ciao")
 
