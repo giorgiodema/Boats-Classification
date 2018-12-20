@@ -19,7 +19,7 @@ random.seed(42)
 
 img_shape = (240,800,3)
 num_classes = 23
-model_filename = os.path.join("pretrained_CNN","inceptionV3_pretrained.h5")
+model_filename = os.path.join("pretrainedCNN","inceptionV3_pretrained.h5")
 
 
 model = load_save.load_model(model_filename)
@@ -31,6 +31,8 @@ if not model:
     x = feat_input
 
     # Add a fully connected layer
+    x = Dense(1024, activation='relu')(x)
+    x = Dense(1024, activation='relu')(x)
     x = Dense(1024, activation='relu')(x)
     
     # Add a final layer
@@ -56,15 +58,17 @@ def shuffle_input(X,Y):
 
 # Loads training set
 def load_train_features():
-    Xtrain = pickle.load(open("features_pretrained_X.pickle", "rb"))
-    Ytrain = pickle.load(open("features_pretrained_Y.pickle", "rb"))
-    return shuffle_input(Xtrain, Ytrain)
+    Xtrain = pickle.load(open(os.path.join("raw","features_pretrained_X.pickle"), "rb"))
+    Ytrain = pickle.load(open(os.path.join("raw","features_pretrained_Y.pickle"), "rb"))
+    #return shuffle_input(Xtrain, Ytrain)
+    return Xtrain, Ytrain
 
 # Loads test set
 def load_test_features():
-    Xtest = pickle.load(open("features_pretrained_test_X.pickle", "rb"))
-    Ytest = pickle.load(open("features_pretrained_test_Y.pickle", "rb"))
-    return shuffle_input(Xtest, Ytest)
+    Xtest = pickle.load(open(os.path.join("raw","features_pretrained_test_X.pickle"), "rb"))
+    Ytest = pickle.load(open(os.path.join("raw","features_pretrained_test_Y.pickle"), "rb"))
+    #return shuffle_input(Xtest, Ytest)
+    return Xtest, Ytest
 
 
 
@@ -73,7 +77,7 @@ Xtrain, Ytrain = load_train_features()
 Xtest, Ytest = load_test_features()
 
 # Comment this line to evaluate only
-model.fit(Xtrain, Ytrain, batch_size=32, epochs=14, verbose=1, validation_data=(Xtest, Ytest), shuffle=False)
+model.fit(Xtrain, Ytrain, batch_size=32, epochs=30, verbose=1, validation_data=(Xtest, Ytest), shuffle=True)
 
 res = model.evaluate(Xtest, Ytest, verbose=1)
 print("Loss:", res[0], "\nAccuracy:", res[1])

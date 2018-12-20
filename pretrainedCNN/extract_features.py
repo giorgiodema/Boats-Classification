@@ -32,8 +32,8 @@ Xtrain,Ytrain,img_shape,labels_ids = dbloader.load_trainingset(img_shape)
 # Extract features for training set
 Xtrain_feat = base_model.predict(Xtrain, verbose=1)
 
-pickle.dump(Xtrain_feat, open(os.path.join('raw','features_pretrained_X.pickle', 'wb')))
-pickle.dump(Ytrain[()], open(os.path.join('raw','features_pretrained_Y.pickle', 'wb')))
+pickle.dump(Xtrain_feat, open(os.path.join('raw','features_pretrained_X.pickle'), 'wb'))
+pickle.dump(Ytrain[()], open(os.path.join('raw','features_pretrained_Y.pickle'), 'wb'))
 
 
 
