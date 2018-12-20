@@ -4,6 +4,7 @@ import pickle
 import numpy as np
 import random
 from pdb import set_trace
+from matplotlib import pyplot as plt
 from keras.applications.inception_v3 import InceptionV3
 from keras.preprocessing import image
 from keras.models import Model
@@ -71,13 +72,29 @@ def load_test_features():
     return Xtest, Ytest
 
 
+def plot(history):
+    plt.plot(history.history['acc'])
+    plt.plot(history.history['val_acc'])
+    plt.title('model accuracy')
+    plt.ylabel('accuracy')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper left')
+    plt.show()
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('model loss')
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper left')
+    plt.show()
 
 
 Xtrain, Ytrain = load_train_features()
 Xtest, Ytest = load_test_features()
 
 # Comment this line to evaluate only
-model.fit(Xtrain, Ytrain, batch_size=32, epochs=30, verbose=1, validation_data=(Xtest, Ytest), shuffle=True)
+history = model.fit(Xtrain, Ytrain, batch_size=32, epochs=30, verbose=1, validation_data=(Xtest, Ytest), shuffle=True)
+plot(history)
 
 res = model.evaluate(Xtest, Ytest, verbose=1)
 print("Loss:", res[0], "\nAccuracy:", res[1])
