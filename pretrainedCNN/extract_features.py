@@ -4,7 +4,7 @@ import pickle
 from keras.applications.inception_v3 import InceptionV3
 from keras.preprocessing import image
 from keras.models import Model
-from keras.layers import Dense, GlobalAveragePooling2D
+from keras.layers import Dense, AveragePooling2D, Flatten
 from keras import backend as K
 sys.path.append(os.path.abspath("utils"))
 import dbloader
@@ -19,8 +19,8 @@ base_model = InceptionV3(weights='imagenet', include_top=False, input_shape=img_
 
 # Add a pooling layer to the last convolutional output
 # TODO: test code, before it was global average pooling without flattening
-x = keras.layers.MaxPooling2D(pool_size=(2, 2))(base_model.layers[-1].output)
-x = keras.layers.Flatten()(x)
+x = AveragePooling2D(pool_size=(4, 4))(base_model.layers[-1].output)
+x = Flatten()(x)
 base_model = Model(base_model.input, x)
 
 

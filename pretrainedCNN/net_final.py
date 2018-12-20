@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 from keras.applications.inception_v3 import InceptionV3
 from keras.preprocessing import image
 from keras.models import Model
-from keras.layers import Dense, GlobalAveragePooling2D, Input
+from keras.layers import Dense, GlobalAveragePooling2D, Input, Dropout
 from keras import backend as K
 sys.path.append(os.path.abspath("utils"))
 import dbloader
@@ -24,17 +24,31 @@ model_filename = os.path.join("pretrainedCNN","inceptionV3_pretrained.h5")
 
 
 model = load_save.load_model(model_filename)
+model = None
 if not model:
     print("Creating model...")
 
     # New model using as input the output of the inception
-    feat_input = Input(shape=(2048,))  #shape of last inceptionV3 layer
+    feat_input = Input(shape=(10240,))  #shape of last inceptionV3 layer pooled
     x = feat_input
 
     # Add a fully connected layer
+    drop = 0.2
     x = Dense(1024, activation='relu')(x)
-    x = Dense(1024, activation='relu')(x)
-    x = Dense(1024, activation='relu')(x)
+    #x = Dropout(drop)(x)
+    #x = Dense(256, activation='relu')(x)
+    #x = Dense(64, activation='relu')(x)
+    #x = Dense(64, activation='relu')(x)
+    #x = Dense(64, activation='relu')(x)
+    #x = Dense(64, activation='relu')(x)
+    #x = Dropout(drop)(x)
+    #x = Dense(512, activation='relu')(x)
+    #x = Dense(256, activation='relu')(x)
+    #x = Dense(128, activation='relu')(x)
+    #x = Dense(64, activation='relu')(x) 
+    #x = Dropout(drop)(x)
+    #x = Dense(512, activation='relu')(x)
+    #x = Dropout(drop)(x)
     
     # Add a final layer
     predictions = Dense(num_classes, activation='softmax')(x)
@@ -45,8 +59,6 @@ if not model:
 
 
 model.summary()
-
-
 
 
 # Performs manual shuffling of data
@@ -71,6 +83,7 @@ def load_test_features():
     #return shuffle_input(Xtest, Ytest)
     return Xtest, Ytest
 
+title = "1024"
 
 def plot(history):
     plt.plot(history.history['acc'])
@@ -79,14 +92,20 @@ def plot(history):
     plt.ylabel('accuracy')
     plt.xlabel('epoch')
     plt.legend(['train', 'test'], loc='upper left')
-    plt.show()
+    #plt.show()
+    plt.savefig(title+'_acc.png',dpi=350)
+    plt.clf()
+
     plt.plot(history.history['loss'])
     plt.plot(history.history['val_loss'])
     plt.title('model loss')
     plt.ylabel('loss')
     plt.xlabel('epoch')
     plt.legend(['train', 'test'], loc='upper left')
-    plt.show()
+    plt.savefig(title+'_loss.png',dpi=350)
+    #plt.show()
+    plt.clf()
+    
 
 
 Xtrain, Ytrain = load_train_features()

@@ -12,3 +12,4 @@ raw/*
 *.pickle
 *.h5
 dataset/
+graphs/

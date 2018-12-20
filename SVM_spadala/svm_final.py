@@ -40,7 +40,7 @@ y_predicted = clf.predict(Xtest)
 print(" - SVM - confusion matrix")
 print("shape:", (Ytrain.shape[1], Ytrain.shape[1]))
 conf_matrix = [[0 for j in range(Ytrain.shape[1])] for i in range(Ytrain.shape[1])]
-np.zeros((Ytrain.shape[1], Ytrain.shape[1]))
+conf_matrix = np.zeros((Ytrain.shape[1], Ytrain.shape[1]))
 for y_pred, Y_gt in zip(y_predicted, preprocess_y(Ytest)):
 	conf_matrix[Y_gt][y_pred] += 1
 #conf_matrix /= len(Ytest)
@@ -51,3 +51,6 @@ for r in conf_matrix:
 	for n in r:
 		print(str(n)+'\t',end='')
 	print()
+
+print('Acuracy:', np.sum(conf_matrix.diagonal()) / np.sum(conf_matrix))
+

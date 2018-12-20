@@ -27,22 +27,23 @@ def load_trainingset(img_shape):
         categories.sort()
         ids = [x for x in range(len(categories))]
         labels_ids = {k:v for (k,v) in zip(categories,ids)}
-        ids_labels = {k:v for (k,v) in zip(ids,categories)}
+        #ids_labels = {k:v for (k,v) in zip(ids,categories)}
 
-        with open(join("raw","ids_labels.pkl"),"wb") as f:
-            pickle.dump(ids_labels,f)
+        #with open(join("raw","ids_labels.pkl"),"wb") as f:
+        #    pickle.dump(ids_labels,f)
         with open(join("raw","labels_ids.pkl"),"wb") as f:
             pickle.dump(labels_ids,f)
     
     print("Loading trainingset ...")
-    with open(join("raw","ids_labels.pkl"),"rb") as f:
-        ids_labels = pickle.load(f)
+    #with open(join("raw","ids_labels.pkl"),"rb") as f:
+    #    ids_labels = pickle.load(f)
     with open(join("raw","labels_ids.pkl"),"rb") as f:
         labels_ids = pickle.load(f)
     h5f = h5py.File(train_path, 'r')
     X = h5f['X']
     Y = h5f['Y']
-    return [X,Y,img_shape,ids_labels,labels_ids]
+    #return [X,Y,img_shape,ids_labels,labels_ids]
+    return [X,Y,img_shape,labels_ids]
 
 def load_testset(img_shape,labels_ids):
 
