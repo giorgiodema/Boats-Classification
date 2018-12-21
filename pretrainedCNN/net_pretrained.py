@@ -41,7 +41,7 @@ class pretrainedCNN:
         self.clf.summary()
 
     def fit(self,X,Y,Xval,Yval):
-        self.clf.fit(X,Y, batch_size=16, validation_data=(Xval,Yval), epochs=20, verbose=1, shuffle=True, callbacks=[CSVLogger("pretrainedCNN.csv", separator=',', append=False)])
+        self.clf.fit(X,Y, batch_size=16, validation_data=(Xval,Yval), epochs=20, verbose=1, shuffle=True, callbacks=TensorBoard(log_dir=tensorboardpath),ModelCheckpoint(model_path, monitor='val_loss', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)])
 
     def predict(self,X):
         y = self.clf.predict(X)
