@@ -6,6 +6,7 @@ from pprint import pprint
 from sklearn.svm import LinearSVC
 from sklearn.externals import joblib
 
+model_filename = os.path.join("trained_models","svm_final.joblib")
 
 print(" - SVM - loading data")
 Xtrain = pickle.load(open(os.path.join("raw","features_pretrained_X.pickle"), "rb"))
@@ -29,7 +30,7 @@ print(" - SVM - training")
 #clf = LinearSVC(verbose=1)
 #clf.fit(Xtrain, preprocess_y(Ytrain))
 #joblib.dump(clf, os.path.join("SVM_spadala","svm_clf.joblib"))
-clf = joblib.load(os.path.join("SVM_spadala","svm_clf.joblib"))
+clf = joblib.load(model_filename)
 
 
 print(" - SVM - evaluating")

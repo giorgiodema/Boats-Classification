@@ -1,5 +1,5 @@
-ARGOStest/*
-ARGOStraining/*
+dataset/ARGOStest/*
+dataset/ARGOStraining/*
 FalsePositives/*
 __pycache__
 .vscode
@@ -7,9 +7,12 @@ trainingset.h5
 testset.h5
 inceptionV3.h5
 logger.csv
-raw/*
+raw/*.h5
+raw/*.pickle
+raw/*.pkl
 *.rar
 *.pickle
 *.h5
-dataset/
 graphs/
+trained_models/*.h5
+trained_models/*.joblib

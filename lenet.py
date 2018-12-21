@@ -1,17 +1,21 @@
+import keras
 import sys, os, datetime
 import numpy as np
-import argparse
-
 import keras
 from keras import models, layers, backend, optimizers
 from keras.layers import Dense, Activation, Dropout, Flatten,\
     Conv2D, MaxPooling2D, AveragePooling2D
+sys.path.append(os.path.abspath("utils"))
+import dbloader
+import load_save
+import alexnet
+import lenet
 
-models_dir = 'models'
+img_shape = (240,800,3)
+num_classes = 23
+model_filename = os.path.join("trained_models","LeNet.h5")
 
 
-
-    
 def LeNet(input_shape, num_classes):
     
     model = models.Sequential()
@@ -28,4 +32,34 @@ def LeNet(input_shape, num_classes):
     model.compile(loss=keras.losses.categorical_crossentropy, optimizer=optimizer, metrics=['accuracy'])
     
     return model
+
+
+
+model = load_save.load_model(model_filename)
+if not model:
+    model = lenet.LeNet(img_shape,num_classes)
+
+model.summary()
+
+
+Xtrain,Ytrain,img_shape,labels_ids = dbloader.load_trainingset(img_shape)
+Xtest,Ytest = dbloader.load_testset(img_shape,labels_ids)
+
+#model.evaluate(Xtest,Ytest)
+#quit()
+
+try:
+    #model.fit(Xtrain, Ytrain, batch_size=64, epochs=10, verbose=1, validation_data = (Xtest,Ytest), shuffle=True)
+    history = model.fit(Xtrain, Ytrain, batch_size=32, epochs=30, verbose=1, validation_data=(Xtest,Ytest), shuffle="batch")
+except KeyboardInterrupt:
+    # Save the model
+    print("Saving...")
+    load_save.save_model(model, model_filename)
+    quit()
+print("Training Completed...")
+print("Saving...")
+load_save.save_model(model, model_filename)
+print("Done...")
+    
+
 
