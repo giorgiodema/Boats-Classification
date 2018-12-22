@@ -4,13 +4,12 @@ from os.path import join
 import sys
 import numpy as np
 from sklearn.metrics import confusion_matrix
+from matplotlib import pyplot as plt
 import enc_classifier
 sys.path.append(os.path.abspath("utils"))
 import dbloader
 
 
-
-path = join("raw","enc_clf.pkl")
 img_shape = (240,800,3)
 num_classes = 24
 
@@ -34,35 +33,57 @@ for i in range(Ytest.shape[0]):
             ytest[i] = k
             break
 
-print("Loading classifier...")
-clf = enc_classifier.load_classifier(path)
-if not clf:
-    clf = enc_classifier.AutoEncSVMclassifier(img_shape,num_classes)
-    clf.fit(Xtrain[()],ytrain,Xtest)
-    print("Saving classifier...")
-    enc_classifier.save_classifier(path,clf)
+
+clf = enc_classifier.AutoEncSVMclassifier(img_shape,num_classes)
+clf.fit(Xtrain[()],ytrain,Xtest)
 
 print("Predicting...")
 y_pred = clf.predict(Xtest[()])
 
 # STATISTICS
-conf_matrix = np.zeros(shape=(len(ids_labels),len(ids_labels)),dtype=np.int32)
+cm = np.zeros(shape=(len(ids_labels),len(ids_labels)),dtype=np.int32)
 for i in range(len(y_pred)):
     ground = int(ytest[i])
     guess = int(y_pred[i])
-    conf_matrix[ground,guess] +=1
+    cm[ground,guess] +=1
 
-right_pred = 0
-miss_pred = 0
+
+classes = []
 for i in range(len(ids_labels)):
-    for j in range(len(ids_labels)):
-        if i==j: right_pred += conf_matrix[i,j]
-        else: miss_pred += conf_matrix[i,j]
+        classes.append(ids_labels[i])
 
-print("Confusion matrix (x-axis = predictions, y-axis = ground")
-print("-------------------------------------------------------")
-for i in range(conf_matrix.shape[0]):
-    for j in range(conf_matrix.shape[1]):
-        print("%03s"%conf_matrix[i,j],end=" ")
-    print("\n")
-print("accuracy = {}".format(right_pred/(right_pred+miss_pred)))
+
+
+#classes accuracy
+classes_accuracy = np.ndarray(shape=(len(classes)))
+for i in range(classes_accuracy.shape[0]):
+    axis_sum = np.sum(cm[i])
+    if axis_sum==0:
+        classes_accuracy[i] = -1
+    else:
+        classes_accuracy[i] = cm[i,i] / axis_sum
+
+#global accuracy
+diagonal = 0
+for i in range(len(classes)):
+    diagonal += cm[i,i]
+global_accuracy = diagonal / np.sum(cm,axis=(0,1))
+
+#normalization
+cm = cm.astype(np.float32)
+for x in range(len(classes)):
+    for y in range(len(classes)):
+        axis_sum = np.sum(cm[x])
+        axis_sum = axis_sum if axis_sum!=0 else 1
+        cm[x,y] = cm[x,y] / axis_sum
+        
+
+plt.matshow(cm)
+plt.colorbar()
+plt.savefig("autoenc_cm.png")
+
+print("Accuracy:")
+for i in range(len(classes)):
+    print("{:50s}:{:3f}".format(ids_labels[i],classes_accuracy[i]))
+
+print("{:50s}:{:3f}".format("GLOBAL ACCURACY",global_accuracy))

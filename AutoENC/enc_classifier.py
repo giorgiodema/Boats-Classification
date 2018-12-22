@@ -16,24 +16,14 @@ import dbloader
 import load_save
 
 model_path = join("raw","encoder.h5")
-
-
-def save_classifier(path,clf):
-    with open(path,"wb") as f:
-        joblib.dump(clf,f)
-
-def load_classifier(path):
-    clf = None
-    if os.path.exists(path):
-        with open(path,"rb") as f:
-            clf = joblib.load(f)
-    return clf
+tensorboardpath = join('tmp','autoencoder')
 
 class AutoEncSVMclassifier:
 
     def __init__(self,img_shape, num_cat):
 
         self.autoencoder = load_save.load_model(model_path)
+        self.trained = True
         if self.autoencoder:
             print("Loading saved clf...")
             self.autoencoder.summary()
@@ -41,6 +31,8 @@ class AutoEncSVMclassifier:
             self.encoded_shape = self.autoencoder.get_layer(name='encoded').output_shape
             self.clf = sklearn.svm.LinearSVC(max_iter=100000)
             return
+
+        self.trained = False
         print("Creating clf...")
 
         # The input layer is a matrix with shape(240,800,3)
@@ -88,18 +80,17 @@ class AutoEncSVMclassifier:
         self.clf = sklearn.svm.LinearSVC(max_iter=100000,verbose=1)
 
     def fit(self,X,y,Xval):
-        print("Training encoder...")
-        tensorboardpath = join('tmp','autoencoder')
-        try:
+        
+        if not self.trained:
+            print("training encoder")
             self.autoencoder.fit(X,X,
                             epochs=40,
                             batch_size=16,
                             shuffle=True,
                             validation_data=(Xval, Xval),
-                            callbacks=[TensorBoard(log_dir=tensorboardpath),ModelCheckpoint(model_path, monitor='val_acc', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)])
-        except KeyboardInterrupt:
-            if not os.path.exists(model_path):
-                load_save.save_model(self.autoencoder,model_path)
+                            callbacks=[ TensorBoard(log_dir=tensorboardpath),
+                                        ModelCheckpoint(model_path, monitor='val_acc', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)])
+
         x_encoded = self.encoder.predict(X)
         print("training svm")
         self.clf.fit(x_encoded,y)

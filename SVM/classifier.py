@@ -28,6 +28,7 @@ class SVMwithFeatures:
             x1 = MaxPooling2D(pool_size=(2,2), strides=2)(self.model.layers[-1].output)
             x2 = Flatten()(x1)        
             self.model = Model(self.model.input,x2)
+            save_model(self.model,model_path)
 
         self.clf = sklearn.svm.LinearSVC(max_iter=100000)
 
