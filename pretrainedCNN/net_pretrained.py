@@ -4,7 +4,7 @@ from os.path import join
 from keras.applications.inception_v3 import InceptionV3
 from keras.preprocessing import image
 from keras.models import Model
-from keras.layers import Dense, Flatten,Input,MaxPooling2D,Dropout,AveragePooling2D
+from keras.layers import Dense, Flatten,Input,MaxPooling2D,Dropout,AveragePooling2D,GlobalAveragePooling2D
 from keras.callbacks import CSVLogger,TensorBoard,ModelCheckpoint
 from keras.backend import flatten
 import pickle
@@ -30,11 +30,8 @@ class pretrainedCNN:
                 layer.trainable=False
 
             bout = base_model.output
-            avg_pool = AveragePooling2D(pool_size=(3,3))(bout)
-            x = Flatten()(avg_pool)
-            x = Dropout(rate=0.4)(x)
-            x = Dense(name='clf_dense',units=1000,activation="relu")(x)
-            o = Dense(name='clf_output',units=num_classes,activation='softmax')(x)
+            avg_pool = GlobalAveragePooling2D()(bout)
+            o = Dense(name='clf_output',units=num_classes,activation='softmax')(avg_pool)
 
             self.clf = Model(inputs=base_model.input,outputs=o)
             self.clf.compile(optimizer='rmsprop',loss='categorical_crossentropy',metrics=['accuracy'])
