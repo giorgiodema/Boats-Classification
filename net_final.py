@@ -33,23 +33,9 @@ if not model:
     x = feat_input
 
     # Add a fully connected layer
-    drop = 0.2
     x = Dense(1024, activation='relu')(x)
-    #x = Dropout(drop)(x)
-    #x = Dense(256, activation='relu')(x)
-    #x = Dense(64, activation='relu')(x)
-    #x = Dense(64, activation='relu')(x)
-    #x = Dense(64, activation='relu')(x)
-    #x = Dense(64, activation='relu')(x)
-    #x = Dropout(drop)(x)
-    #x = Dense(512, activation='relu')(x)
-    #x = Dense(256, activation='relu')(x)
-    #x = Dense(128, activation='relu')(x)
-    #x = Dense(64, activation='relu')(x) 
-    #x = Dropout(drop)(x)
-    #x = Dense(512, activation='relu')(x)
-    #x = Dropout(drop)(x)
-    
+    #x = Dropout(0.2)(x)
+
     # Add a final layer
     predictions = Dense(num_classes, activation='softmax')(x)
 
@@ -83,7 +69,7 @@ def load_test_features():
     #return shuffle_input(Xtest, Ytest)
     return Xtest, Ytest
 
-title = "1024"
+
 
 def plot(history):
     plt.plot(history.history['acc'])
@@ -92,9 +78,7 @@ def plot(history):
     plt.ylabel('accuracy')
     plt.xlabel('epoch')
     plt.legend(['train', 'test'], loc='upper left')
-    #plt.show()
-    plt.savefig(title+'_acc.png',dpi=350)
-    plt.clf()
+    plt.show()
 
     plt.plot(history.history['loss'])
     plt.plot(history.history['val_loss'])
@@ -102,9 +86,7 @@ def plot(history):
     plt.ylabel('loss')
     plt.xlabel('epoch')
     plt.legend(['train', 'test'], loc='upper left')
-    plt.savefig(title+'_loss.png',dpi=350)
-    #plt.show()
-    plt.clf()
+    plt.show()
     
 
 

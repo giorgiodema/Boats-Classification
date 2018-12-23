@@ -18,7 +18,6 @@ num_classes = 23
 base_model = InceptionV3(weights='imagenet', include_top=False, input_shape=img_shape)
 
 # Add a pooling layer to the last convolutional output
-# TODO: test code, before it was global average pooling without flattening
 x = AveragePooling2D(pool_size=(4, 4))(base_model.layers[-1].output)
 x = Flatten()(x)
 base_model = Model(base_model.input, x)
