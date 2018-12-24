@@ -5,7 +5,7 @@ import sys
 import numpy as np
 from sklearn.metrics import confusion_matrix
 from matplotlib import pyplot as plt
-import enc_classifier
+import enc_CNN
 sys.path.append(os.path.abspath("utils"))
 import dbloader
 
@@ -16,35 +16,29 @@ num_classes = 24
 Xtrain,Ytrain,img_shape,ids_labels,labels_ids = dbloader.load_trainingset(img_shape)
 Xtest,Ytest = dbloader.load_testset(img_shape,labels_ids)
 
-print("formatting ground vector to categorical for SVM...")
-ytrain = np.zeros(shape = Ytrain.shape[0])
-for i in range(Ytrain.shape[0]):
-    y = Ytrain[i]
-    for k in range(y.shape[0]):
-        if y[k] == 1:
-            ytrain[i] = k
-            break
 
-ytest = np.zeros(shape = Ytest.shape[0])
-for i in range(Ytest.shape[0]):
-    y = Ytest[i]
-    for k in range(y.shape[0]):
-        if y[k] == 1:
-            ytest[i] = k
-            break
+clf = enc_CNN.AutoEncSVMclassifier(img_shape,num_classes)
+clf.fit(Xtrain[()],Ytrain[()],Xtest[()],Ytest[()])
 
-
-clf = enc_classifier.AutoEncSVMclassifier(img_shape,num_classes)
-clf.fit(Xtrain[()],ytrain,Xtest)
 
 print("Predicting...")
-y_pred = clf.predict(Xtest[()])
+Ypred = clf.predict(Xtest[()])
+
+ypred = np.zeros(shape = Ypred.shape[0],dtype=np.int32)
+ytest = np.zeros(shape = Ypred.shape[0],dtype=np.int32)
+for i in range(Ypred.shape[0]):
+    tr = Ytest[()][i]
+    pr = Ypred[i]
+    trindex = np.where(tr==1)[0]
+    prindex = np.where(pr==pr.max())[0]
+    ytest[i] = trindex
+    ypred[i] = prindex
 
 # STATISTICS
 cm = np.zeros(shape=(len(ids_labels),len(ids_labels)),dtype=np.int32)
-for i in range(len(y_pred)):
+for i in range(len(ypred)):
     ground = int(ytest[i])
-    guess = int(y_pred[i])
+    guess = int(ypred[i])
     cm[ground,guess] +=1
 
 

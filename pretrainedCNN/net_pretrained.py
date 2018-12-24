@@ -29,7 +29,9 @@ class pretrainedCNN:
             for layer in base_model.layers:
                 layer.trainable=False
 
+            # shape = (6,23,2048)
             bout = base_model.output
+            # shape = (2048)
             avg_pool = GlobalAveragePooling2D()(bout)
             o = Dense(name='clf_output',units=num_classes,activation='softmax')(avg_pool)
 

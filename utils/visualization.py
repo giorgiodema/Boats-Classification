@@ -16,13 +16,14 @@ import keras
 
 
 
-def print_filters_output(model,path, X, max_images=10):
+def print_filters_output(model,path, X, max_images=10, layers_to_print = None):
     if not os.path.exists(path):
         raise Exception("specified path does not exists")
     # plotting model structure
     plot_model(model, to_file=join(path,'model.png'),show_layer_names=False,show_shapes=True,rankdir='LR')
 
-    for i in range(1,len(model.layers)):
+    iterator = layers_to_print if layers_to_print else range(1,len(model.layers))
+    for i in iterator:
 
         layer = model.layers[i]
         if len(layer.output_shape)!=4:
@@ -59,14 +60,15 @@ def print_filters_output(model,path, X, max_images=10):
 
 
 
-model_path = join("raw","CNN.h5")
+model_path = join("raw","encoder.h5")
 model = load_save.load_model(model_path)
-if not model:
-    x = Input(shape=(240,800,3))
-    model = keras.applications.inception_v3.InceptionV3(include_top=True, weights='imagenet', input_tensor=x, input_shape=None, pooling=None, classes=1000)
-save_path = join("raw","CNN")
+save_path = join("FiltersImages","Autoencoder")
+
+
+
 
 img_shape=(240,800,3)
-Xtrain,Ytrain,img_shape,ids_labels,labels_ids = dbloader.load_trainingset((800,240,3))
+Xtrain,Ytrain,img_shape,ids_labels,labels_ids = dbloader.load_trainingset(img_shape)
 Xtest,Ytest = dbloader.load_testset(img_shape,labels_ids)
-print_filters_output(model,save_path,Xtest[()])
+
+print_filters_output(model,save_path,Xtest[()],max_images=10)
