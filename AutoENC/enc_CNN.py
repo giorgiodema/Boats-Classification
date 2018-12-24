@@ -3,11 +3,12 @@ import os
 from os.path import join
 from sklearn.externals import joblib
 from keras.preprocessing import image
-from keras.layers import Input,Conv2D,MaxPooling2D,UpSampling2D,Flatten,Dense, Reshape,Dropout
+from keras.layers import Input,Conv2D,MaxPooling2D,UpSampling2D,Flatten,Dense, Reshape,Dropout,Lambda
 from keras.models import Model
 from keras.backend import reshape,flatten
 from keras.callbacks import CSVLogger, TensorBoard, ModelCheckpoint
 from keras.optimizers import Adadelta, SGD
+
 
 import sklearn.svm
 import numpy as np
@@ -19,7 +20,17 @@ enc_path = join("raw","encoder.h5")
 clf_path = join("raw","enc_clf.h5")
 tensorboardpath = join('tmp','autoencoder')
 
-class AutoEncSVMclassifier:
+
+def UpSampling2DBilinear(stride, **kwargs):
+    def layer(x):
+        from keras import backend as K
+        import tensorflow as tf
+        input_shape = K.int_shape(x)
+        output_shape = (stride * input_shape[1], stride * input_shape[2])
+        return tf.image.resize_bilinear(x, output_shape, align_corners=True)
+    return Lambda(layer, **kwargs)
+
+class AutoEncClassifier:
 
     def __init__(self,img_shape, num_cat):
         self.autoencoder = load_save.load_model(enc_path)
@@ -28,7 +39,7 @@ class AutoEncSVMclassifier:
         self.clf_trained = True
 
         if not self.autoencoder:
-            self.trained = False
+            self.enc_trained = False
             print("Creating clf...")
 
             # The input layer is a matrix with shape(240,800,3)
@@ -54,15 +65,15 @@ class AutoEncSVMclassifier:
             # shape = (15,50,9)
             x = Conv2D(filters=9,kernel_size=(5,5),padding='same',activation='relu')(x)
             # shape = (60,200,9)
-            x = UpSampling2D(size=(4,4))(x)
+            x = UpSampling2DBilinear(4)(x)
             # shape = (60,200,15)
             x = Conv2D(filters=15,kernel_size=(5,5),padding='same',activation='relu')(x)
             # shape = (120,400,15)
-            x = UpSampling2D(size=(2,2))(x)
+            x = UpSampling2DBilinear(2)(x)
             # shape = (120,400,21)
             x = Conv2D(filters=21,kernel_size=(5,5),padding='same',activation='relu')(x)
             # shape = (240,800,21)
-            x = UpSampling2D(size=(2,2))(x)
+            x = UpSampling2DBilinear(2)(x)
             # shape = (240,480,3)
             decoded = Conv2D(filters=3,kernel_size=(5,5),padding='same',activation='sigmoid')(x)
 
@@ -100,12 +111,14 @@ class AutoEncSVMclassifier:
         
         if not self.enc_trained:
             print("training encoder")
+            #os.environ["CUDA_VISIBLE_DEVICES"]="0"
             self.autoencoder.fit(X,X,
                             epochs=40,
                             batch_size=16,
                             shuffle=True,
+                            validation_data=(Xval, Xval),
                             callbacks=[ TensorBoard(log_dir=tensorboardpath),
-                                        ModelCheckpoint(enc_path, monitor='val_acc', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)])
+                                        ModelCheckpoint(enc_path, monitor='val_loss', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)])
 
         print("training clf")
         x_encoded = self.encoder.predict(X)
@@ -117,7 +130,7 @@ class AutoEncSVMclassifier:
                         shuffle=True,
                         validation_data=(xtest_encoded, Yval),
                         callbacks=[ TensorBoard(log_dir=tensorboardpath),
-                                    ModelCheckpoint(clf_path, monitor='val_acc', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)])
+                                    ModelCheckpoint(clf_path, monitor='val_loss', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)])
                         
 
 

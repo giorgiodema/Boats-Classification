@@ -10,6 +10,7 @@ sys.path.append(os.path.abspath("utils"))
 import dbloader
 
 
+
 img_shape = (240,800,3)
 num_classes = 24
 
@@ -17,7 +18,7 @@ Xtrain,Ytrain,img_shape,ids_labels,labels_ids = dbloader.load_trainingset(img_sh
 Xtest,Ytest = dbloader.load_testset(img_shape,labels_ids)
 
 
-clf = enc_CNN.AutoEncSVMclassifier(img_shape,num_classes)
+clf = enc_CNN.AutoEncClassifier(img_shape,num_classes)
 clf.fit(Xtrain[()],Ytrain[()],Xtest[()],Ytest[()])
 
 

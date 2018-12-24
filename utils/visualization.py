@@ -71,4 +71,4 @@ img_shape=(240,800,3)
 Xtrain,Ytrain,img_shape,ids_labels,labels_ids = dbloader.load_trainingset(img_shape)
 Xtest,Ytest = dbloader.load_testset(img_shape,labels_ids)
 
-print_filters_output(model,save_path,Xtest[()],max_images=10)
+print_filters_output(model,save_path,Xtest[()],max_images=3,layers_to_print=[1,3,5,9,11,13,15])
