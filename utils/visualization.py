@@ -20,7 +20,7 @@ def print_filters_output(model,path, X, max_images=10, layers_to_print = None):
     if not os.path.exists(path):
         raise Exception("specified path does not exists")
     # plotting model structure
-    plot_model(model, to_file=join(path,'model.png'),show_layer_names=False,show_shapes=True,rankdir='LR')
+    #plot_model(model, to_file=join(path,'model.png'),show_layer_names=False,show_shapes=True,rankdir='LR')
 
     iterator = layers_to_print if layers_to_print else range(1,len(model.layers))
     for i in iterator:
@@ -71,4 +71,4 @@ img_shape=(240,800,3)
 Xtrain,Ytrain,img_shape,ids_labels,labels_ids = dbloader.load_trainingset(img_shape)
 Xtest,Ytest = dbloader.load_testset(img_shape,labels_ids)
 
-print_filters_output(model,save_path,Xtest[()],max_images=3,layers_to_print=[1,3,5,9,11,13,15])
+print_filters_output(model,save_path,Xtest[()],max_images=3,layers_to_print=[1,-1])

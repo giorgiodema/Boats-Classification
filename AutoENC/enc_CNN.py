@@ -119,18 +119,18 @@ class AutoEncClassifier:
                             validation_data=(Xval, Xval),
                             callbacks=[ TensorBoard(log_dir=tensorboardpath),
                                         ModelCheckpoint(enc_path, monitor='val_loss', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)])
-
-        print("training clf")
-        x_encoded = self.encoder.predict(X)
-        xtest_encoded = self.encoder.predict(Xval)
         if not self.clf_trained:
-            self.clf.fit(x_encoded,Y,
-                        epochs=40,
-                        batch_size=16,
-                        shuffle=True,
-                        validation_data=(xtest_encoded, Yval),
-                        callbacks=[ TensorBoard(log_dir=tensorboardpath),
-                                    ModelCheckpoint(clf_path, monitor='val_loss', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)])
+            print("training clf")
+            x_encoded = self.encoder.predict(X)
+            xtest_encoded = self.encoder.predict(Xval)
+            if not self.clf_trained:
+                self.clf.fit(x_encoded,Y,
+                            epochs=80,
+                            batch_size=16,
+                            shuffle=True,
+                            validation_data=(xtest_encoded, Yval),
+                            callbacks=[ TensorBoard(log_dir=tensorboardpath),
+                                        ModelCheckpoint(clf_path, monitor='val_loss', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)])
                         
 
 
