@@ -7,9 +7,12 @@ logger.csv
 raw/*
 *.pkl
 *.jpg
-*.txt
 *.h5
 *.csv
 *.docx
 *.png
 tmp/*
+__pycache__/*
+*.db
+ground_truth.txt
+DBinfo.txt
