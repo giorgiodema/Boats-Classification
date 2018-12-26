@@ -15,12 +15,16 @@ import keras
 
 
 
-
-def print_filters_output(model,path, X, max_images=10, layers_to_print = None):
+# This method saves the output of the filters of the given model creating a folder for each of them to the specified path.
+#       --> layers_to_print: is a list of indices of the layers we want to print, if it's not specified all layers wil be printed
+#       --> max images specifies the maximum number of images to print for each filter
+#       --> if print_structure is true the function will save also an image with the model structure
+def print_filters_output(model,path, X, max_images=10, layers_to_print = None, print_structure=False):
     if not os.path.exists(path):
         raise Exception("specified path does not exists")
     # plotting model structure
-    #plot_model(model, to_file=join(path,'model.png'),show_layer_names=False,show_shapes=True,rankdir='LR')
+    if print_structure:
+        plot_model(model, to_file=join(path,'model.png'),show_layer_names=False,show_shapes=True,rankdir='LR')
 
     iterator = layers_to_print if layers_to_print else range(1,len(model.layers))
     for i in iterator:
@@ -58,7 +62,7 @@ def print_filters_output(model,path, X, max_images=10, layers_to_print = None):
 
 
 
-
+######### EXAMPLE ##########################
 
 model_path = join("raw","encoder.h5")
 model = load_save.load_model(model_path)

@@ -9,6 +9,7 @@ from os.path import join
 
 train_path = join("raw","trainingset.h5")
 test_path = join("raw","testset.h5")
+
 def load_trainingset(img_shape):
     
     labels_ids = {}
@@ -81,32 +82,3 @@ def load_testset(img_shape,labels_ids):
     Y = h5f['Y']
 
     return [X,Y]
-
-
-
-"""
-    if not os.path.exists("testset.h5"):
-        print("Creating testset...")
-        with open("ARGOStest\ground_truth.txt","r") as f:
-            aux = f.read().split('\n')
-            aux = list(filter(lambda x: re.match(r'.*;.*',x),aux))
-            aux = list(map(lambda x: (x.split(';')[0],x.split(';')[1].replace(' ','').replace(':','')),aux))
-            ground = {k:v for (k,v) in aux}
-        with open("raw\img-id.txt","w") as f:
-            for img in ground.keys():
-                if ground[img] in labels_ids.keys():
-                    f.write(".\ARGOStest\{} {}\n".format(img,labels_ids[ground[img]]))
-
-        tflearn.data_utils.build_hdf5_image_dataset("raw\img-id.txt", img_shape, output_path='testset.h5',
-                             mode='file', categorical_labels=True,
-                             normalize=False, grayscale=False,
-                             files_extension=['.jpg'], chunks=False)
-
-
-    print("Loading testset ...")
-    h5f = h5py.File('testset.h5', 'r')
-    X = h5f['X']
-    Y = h5f['Y']
-
-    return [X,Y]
-"""
